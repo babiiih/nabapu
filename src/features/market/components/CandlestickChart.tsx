@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   assetCandles,
   assetActivity,
+  explorerActivity,
   activityEthAmount,
   activityTokenAmount,
   type VibesCandle,
@@ -60,9 +61,15 @@ export default function CandlestickChart({
       let list = await assetCandles(tokenAddress, interval);
       let src = "candles";
       if (list.length === 0) {
-        const trades = await assetActivity(tokenAddress, { limit: 100 });
+        const [trades0, extraTrades] = await Promise.all([
+          assetActivity(tokenAddress, { limit: 100 }),
+          explorerActivity(tokenAddress),
+        ]);
+        const seen = new Set<string>();
+        const trades = [...trades0, ...extraTrades]
+          .filter((t) => t.txHash && !seen.has(t.txHash) && seen.add(t.txHash));
         list = tradesToCandles(trades);
-        src = list.length ? "trade history" : "";
+        src = list.length ? "trade history + on-chain" : "";
       }
       if (!cancelled) {
         setCandles(list);

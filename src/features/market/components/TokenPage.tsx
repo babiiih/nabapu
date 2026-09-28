@@ -135,6 +135,14 @@ export default function TokenPage({ address }: { address: string }) {
             <Stat label="24h volume" value={`${fmtEth(launch.analytics.volume24hWei)} ETH`} />
             <Stat label="Holders" value={String(launch.holderCount ?? 0)} />
             <Stat
+              label="Unique buyers (1h)"
+              value={String(launch.analytics.uniqueBuyers1h ?? 0)}
+            />
+            <Stat
+              label="Trades (1h)"
+              value={`${launch.analytics.buyCount1h ?? 0}B / ${launch.analytics.sellCount1h ?? 0}S`}
+            />
+            <Stat
               label="Curve progress"
               value={`${Math.round(launch.curve.progressBps / 100)}%`}
             />

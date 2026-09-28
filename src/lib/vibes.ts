@@ -218,6 +218,37 @@ export async function assetCandles(
   }
 }
 
+/**
+ * On-chain tx history straight from the Robinhood explorer — the ground truth.
+ * Used as a fallback/complement to the indexer feed on the token page.
+ * The explorer only supports the token address itself, not the bonding curve.
+ */
+export async function explorerActivity(
+  address: string,
+): Promise<VibesActivity[]> {
+  try {
+    const j = await getJson(`/explorer/addresses/${address}/transactions`);
+    const items = (j.items ?? []) as any[];
+    return items.map((t) => {
+      const sel = (t.raw_input ?? "").slice(0, 10).toLowerCase();
+      // SEEDIFY curve selectors: buy 0xd6febde8, sell 0xd3c9727c
+      const isBuy = sel === "0xd6febde8";
+      const isSell = sel === "0xd3c9727c";
+      return {
+        id: t.hash,
+        type: isBuy ? "BUY" : isSell ? "SELL" : (t.transaction_types?.[0] ?? "TRADE"),
+        tokenAddress: address,
+        actorAddress: t.from_hash ?? t.from ?? "",
+        txHash: t.hash,
+        blockNumber: String(t.block_number ?? 0),
+        occurredAt: t.timestamp ?? "",
+      } as VibesActivity;
+    });
+  } catch {
+    return [];
+  }
+}
+
 /** 24h trade flow (buys vs sells) for a single asset. */
 export async function assetFlow24h(tokenAddress: string): Promise<any> {
   try {

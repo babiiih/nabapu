@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   assetActivity,
+  explorerActivity,
   activityTokenAmount,
   activityEthAmount,
   type VibesActivity,
@@ -18,8 +19,18 @@ export default function TradeLog({ tokenAddress }: { tokenAddress: string }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const list = await assetActivity(tokenAddress, { limit: 100 });
-      if (!cancelled) setRows(list);
+      // Merge the indexer feed with raw on-chain history from the explorer,
+      // deduped by tx hash. The explorer is the ground truth, the indexer adds
+      // decoded amounts.
+      const [indexed, onchain] = await Promise.all([
+        assetActivity(tokenAddress, { limit: 100 }),
+        explorerActivity(tokenAddress),
+      ]);
+      const seen = new Set<string>();
+      const merged = [...indexed, ...onchain]
+        .filter((a) => a.txHash && !seen.has(a.txHash) && seen.add(a.txHash))
+        .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt));
+      if (!cancelled) setRows(merged);
     })();
     return () => {
       cancelled = true;
