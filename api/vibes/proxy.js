@@ -23,7 +23,7 @@ const ALLOWED_PREFIXES = [
 ];
 
 /** Price candles + 24h trade flow for a single asset. */
-const ASSET_STATS_RE = /^\/assets\/0x[a-f0-9]{40}\/(candles|flow24h)$/i;
+const ASSET_STATS_RE = /^\/assets\/0x[a-f0-9]{40}\/(candles|flow24h|activity)$/i;
 
 export default async function handler(req, res) {
   // vercel.json rewrites /api/vibes/(.*) -> /api/vibes/proxy and the captured
@@ -36,10 +36,12 @@ export default async function handler(req, res) {
 
   const isWalletActivity = joined.startsWith("/wallets/") && joined.endsWith("/activity");
   const isLaunchDetail = /^\/launches\/0x[a-f0-9]{40}$/i.test(joined);
+  const isLaunchStats = /^\/launches\/0x[a-f0-9]{40}\/(candles|flow24h|activity)$/i.test(joined);
 
   const isAllowed =
     ALLOWED_PREFIXES.some((p) => joined === p || joined.startsWith(p + "/")) ||
     isLaunchDetail ||
+    isLaunchStats ||
     isWalletActivity ||
     ASSET_STATS_RE.test(joined);
 

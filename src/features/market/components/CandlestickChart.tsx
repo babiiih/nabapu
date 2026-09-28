@@ -1,10 +1,42 @@
 import { useEffect, useRef, useState } from "react";
-import { assetCandles, type VibesCandle } from "@/lib/vibes";
+import {
+  assetCandles,
+  assetActivity,
+  activityEthAmount,
+  activityTokenAmount,
+  type VibesCandle,
+  type VibesActivity,
+} from "@/lib/vibes";
 import { fmtEth } from "@/lib/format";
+
+/** Derive a synthetic OHLC series from trade events (fallback when the
+ * indexer has no candle buckets yet — every BUY/SELL becomes a price point). */
+function tradesToCandles(rows: VibesActivity[]): VibesCandle[] {
+  const pts = rows
+    .map((a) => {
+      const eth = activityEthAmount(a);
+      const tok = activityTokenAmount(a);
+      if (!eth || !tok) return null;
+      const price = Number(BigInt(eth)) / Number(BigInt(tok));
+      return { t: new Date(a.occurredAt).getTime() / 1000, p: price };
+    })
+    .filter((x): x is { t: number; p: number } => x !== null)
+    .sort((a, b) => a.t - b.t);
+  if (pts.length === 0) return [];
+  return pts.map((x) => ({
+    t: x.t,
+    o: String(pts[0].p),
+    h: String(Math.max(x.p, ...pts.map((q) => q.p))),
+    l: String(Math.min(x.p, ...pts.map((q) => q.p))),
+    c: String(x.p),
+    v: "0",
+  }));
+}
 
 /**
  * Lightweight candlestick chart — pure canvas, no chart library.
  * Price is ETH per token; green = up candle, red = down candle.
+ * Falls back to a trade-event price series when candle buckets are empty.
  */
 const INTERVALS = ["15m", "1h", "4h", "1d"] as const;
 
@@ -17,6 +49,7 @@ export default function CandlestickChart({
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [candles, setCandles] = useState<VibesCandle[] | null>(null);
+  const [source, setSource] = useState<string>("");
   const [interval, setIntervalSel] = useState<(typeof INTERVALS)[number]>("1h");
   const [hover] = useState<string | null>(null);
 
@@ -24,8 +57,17 @@ export default function CandlestickChart({
     let cancelled = false;
     setCandles(null);
     (async () => {
-      const list = await assetCandles(tokenAddress, interval);
-      if (!cancelled) setCandles(list);
+      let list = await assetCandles(tokenAddress, interval);
+      let src = "candles";
+      if (list.length === 0) {
+        const trades = await assetActivity(tokenAddress, { limit: 200 });
+        list = tradesToCandles(trades);
+        src = list.length ? "trade history" : "";
+      }
+      if (!cancelled) {
+        setCandles(list);
+        setSource(src);
+      }
     })();
     return () => {
       cancelled = true;
@@ -135,7 +177,9 @@ export default function CandlestickChart({
     <div>
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-muted-foreground">
-          {candles ? `${candles.length} candles · ETH per token` : "Loading chart…"}
+          {candles
+            ? `${candles.length} points · ${source || "candles"} · ETH per token`
+            : "Loading chart…"}
         </span>
         <div className="flex gap-1">
           {INTERVALS.map((iv) => (

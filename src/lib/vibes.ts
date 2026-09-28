@@ -210,8 +210,9 @@ export async function assetCandles(
     const p = new URLSearchParams({ interval });
     if (from) p.set("from", String(from));
     if (to) p.set("to", String(to));
-    const j = await getJson(`/assets/${tokenAddress}/candles?${p.toString()}`);
-    return (j.data.items as VibesCandle[]) ?? [];
+    const j = await getJson(`/launches/${tokenAddress}/candles?${p.toString()}`);
+    const d = j.data ?? {};
+    return (d.candles as VibesCandle[]) ?? (d.items as VibesCandle[]) ?? [];
   } catch {
     return [];
   }
@@ -234,7 +235,7 @@ export async function assetActivity(
 ): Promise<VibesActivity[]> {
   try {
     const j = await getJson(
-      `/assets/${tokenAddress}/activity?limit=${limit}`,
+      `/launches/${tokenAddress}/activity?limit=${limit}`,
     );
     return (j.data.items as VibesActivity[]) ?? [];
   } catch {
