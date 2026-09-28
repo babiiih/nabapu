@@ -49,3 +49,15 @@ export function timeAgo(iso: string | undefined | null): string {
   if (s < 86400 * 30) return Math.floor(s / 86400) + "d";
   return Math.floor(s / (86400 * 30)) + "mo";
 }
+
+/** Local wallet nickname — set from the profile dropdown / sidebar.
+ *  Falls back to the short address when unset. */
+export function walletLabel(fallback?: string | null): string {
+  try {
+    const v = localStorage.getItem("nabapu:label");
+    if (v && v.trim()) return v.trim();
+  } catch {
+    /* ignore */
+  }
+  return fallback ? shortAddr(fallback) : "Connect wallet";
+}

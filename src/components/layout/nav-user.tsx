@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useAccount, useDisconnect, useConnect, useChains } from 'wagmi'
-import { shortAddr } from '@/lib/format'
+import { walletLabel } from '@/lib/format'
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -33,7 +33,7 @@ export function NavUser() {
   const chains = useChains()
   const chain = chains[0]
 
-  const name = isConnected ? shortAddr(address!) : 'Connect wallet'
+  const name = isConnected ? walletLabel(address) : 'Connect wallet'
   const email = isConnected
     ? chain?.name ?? 'Connected'
     : 'Robinhood Chain Testnet'
