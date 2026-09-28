@@ -11,18 +11,7 @@ export function Footer({ className, ...props }: FooterProps) {
       )}
       {...props}
     >
-      <span>&copy; {new Date().getFullYear()} All rights reserved by <a href="https://github.com/satnaing" target="_blank" rel="noreferrer" className="text-foreground font-medium underline-offset-4 hover:underline">Sat Naing</a> </span>
-      <span>
-         &bull; Distributed by{' '}
-        <a
-          href='https://themewagon.com/'
-          target='_blank'
-          rel='noreferrer'
-          className='text-foreground font-medium underline-offset-4 hover:underline'
-        >
-          ThemeWagon
-        </a>
-      </span>
+      <span>&copy; {new Date().getFullYear()} Nabapu — RWA marketplace on Robinhood Chain Testnet</span>
     </footer>
   )
 }

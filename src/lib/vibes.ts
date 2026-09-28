@@ -227,4 +227,19 @@ export async function assetFlow24h(tokenAddress: string): Promise<any> {
   }
 }
 
+/** Recent trades for a single asset — the token page trade log. */
+export async function assetActivity(
+  tokenAddress: string,
+  { limit = 40 }: { limit?: number } = {},
+): Promise<VibesActivity[]> {
+  try {
+    const j = await getJson(
+      `/assets/${tokenAddress}/activity?limit=${limit}`,
+    );
+    return (j.data.items as VibesActivity[]) ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export const VIBES_SITE = "https://testnet.vibevibe.fun";

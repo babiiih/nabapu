@@ -10,6 +10,8 @@ import { useAccount, useBalance, useReadContract, useWriteContract } from "wagmi
 import { parseAbi, parseEther, formatEther } from "viem";
 import { getLaunch, type VibesLaunch } from "@/lib/vibes";
 import { Link } from "@tanstack/react-router";
+import CandlestickChart from "./CandlestickChart";
+import TradeLog from "./TradeLog";
 import { fmtEth, fmtTokens, shortAddr, timeAgo } from "@/lib/format";
 import TokenImage from "./TokenImage";
 import { Button } from "@/components/ui/button";
@@ -154,6 +156,21 @@ export default function TokenPage({ address }: { address: string }) {
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
         <TradeBox launch={launch} />
         <AboutBox launch={launch} />
+      </div>
+
+      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <section>
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">
+            Price movement
+          </h2>
+          <CandlestickChart tokenAddress={token} />
+        </section>
+        <section>
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">
+            Trade history
+          </h2>
+          <TradeLog tokenAddress={token} />
+        </section>
       </div>
     </section>
   );

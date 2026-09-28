@@ -2,7 +2,6 @@ import {
   LayoutDashboard,
   CandlestickChart,
   Wallet,
-  Settings,
   Command,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
@@ -11,7 +10,7 @@ export const sidebarData: SidebarData = {
   user: {
     name: 'Connect wallet',
     email: '0x0000…0000',
-    avatar: '/avatars/shadcn.jpg',
+    avatar: '',
   },
   teams: [
     {
@@ -38,16 +37,6 @@ export const sidebarData: SidebarData = {
           title: 'Profile',
           url: '/profile',
           icon: Wallet,
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      items: [
-        {
-          title: 'Appearance',
-          url: '/settings/appearance',
-          icon: Settings,
         },
       ],
     },
