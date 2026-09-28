@@ -1,7 +1,15 @@
 /** Small formatting helpers shared across market components. */
 
+function isWeiLike(v: unknown): v is string | bigint {
+  if (typeof v === "bigint") return true;
+  if (typeof v !== "string") return false;
+  // "NaN", "Infinity", "" and anything non-numeric must be rejected here —
+  // BigInt() throws on those and takes the whole page down.
+  return /^\d+$/.test(v.trim());
+}
+
 export function fmtEth(wei: string | bigint | undefined | null, maxFrac = 4): string {
-  if (!wei) return "0";
+  if (!isWeiLike(wei)) return "0";
   const n = Number(BigInt(String(wei))) / 1e18;
   if (!isFinite(n)) return "0";
   if (n === 0) return "0";
@@ -10,7 +18,7 @@ export function fmtEth(wei: string | bigint | undefined | null, maxFrac = 4): st
 }
 
 export function fmtTokens(baseUnits: string | bigint | undefined | null, maxFrac = 2): string {
-  if (!baseUnits) return "0";
+  if (!isWeiLike(baseUnits)) return "0";
   const n = Number(BigInt(String(baseUnits))) / 1e18;
   if (!isFinite(n)) return "0";
   if (n === 0) return "0";
