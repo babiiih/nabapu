@@ -1,7 +1,7 @@
 {
-  "name": "shadcn-admin",
-  "private": false,
-  "version": "2.2.1",
+  "name": "nabapu",
+  "private": true,
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
