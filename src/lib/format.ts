@@ -33,12 +33,14 @@ export function fmtPct(bps: number | string | undefined | null): string {
   return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
 }
 
-export function shortAddr(a: string | undefined | null): string {
+export function shortAddr(a: unknown): string {
+  if (typeof a !== "string") return "";
   if (!a) return "";
   return a.slice(0, 6) + "…" + a.slice(-4);
 }
 
-export function timeAgo(iso: string | undefined | null): string {
+export function timeAgo(iso: unknown): string {
+  if (typeof iso !== "string") return "";
   if (!iso) return "";
   const then = Date.parse(iso);
   if (isNaN(then)) return "";
