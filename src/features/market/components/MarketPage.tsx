@@ -11,7 +11,7 @@ import {
   type VibesLaunch,
   type VibesPage,
 } from "@/lib/vibes";
-import { fmtEth, fmtPct, timeAgo, shortAddr } from "@/lib/format";
+import { fmtEth, fmtPct, timeAgo, shortAddr, toWei } from "@/lib/format";
 import TokenImage from "./TokenImage";
 
 type Sort = "new" | "volume" | "holders" | "progress";
@@ -76,7 +76,7 @@ export default function MarketPage() {
       // stays stable instead of re-shuffling after every "load more".
       new: () => 0,
       volume: (a, b) =>
-        Number(BigInt(b.analytics.volume24hWei)) - Number(BigInt(a.analytics.volume24hWei)),
+        Number(toWei(b.analytics.volume24hWei)) - Number(toWei(a.analytics.volume24hWei)),
       holders: (a, b) => (b.holderCount ?? 0) - (a.holderCount ?? 0),
       progress: (a, b) => b.curve.progressBps - a.curve.progressBps,
     };

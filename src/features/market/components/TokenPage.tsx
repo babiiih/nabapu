@@ -12,7 +12,7 @@ import { getLaunch, type VibesLaunch } from "@/lib/vibes";
 import { Link } from "@tanstack/react-router";
 import CandlestickChart from "./CandlestickChart";
 import TradeLog from "./TradeLog";
-import { fmtEth, fmtTokens, shortAddr, timeAgo } from "@/lib/format";
+import { fmtEth, fmtTokens, shortAddr, timeAgo, toWei } from "@/lib/format";
 import TokenImage from "./TokenImage";
 import { Button } from "@/components/ui/button";
 import { CHAIN } from "@/contracts";
@@ -208,8 +208,8 @@ function Stat({
 function CurveProgress({ launch }: { launch: VibesLaunch }) {
   const pct = Math.min(100, Math.round(launch.curve.progressBps / 100));
   const grad = launch.curve.lifecycle === "GRADUATED";
-  const raised = Number(BigInt(launch.curve.netRaisedWei)) / 1e18;
-  const target = Number(BigInt(launch.curve.netTargetWei)) / 1e18;
+  const raised = Number(toWei(launch.curve.netRaisedWei)) / 1e18;
+  const target = Number(toWei(launch.curve.netTargetWei)) / 1e18;
   return (
     <div>
       <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">

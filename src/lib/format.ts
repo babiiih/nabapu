@@ -8,6 +8,15 @@ function isWeiLike(v: unknown): v is string | bigint {
   return /^\d+$/.test(v.trim());
 }
 
+/**
+ * Safe BigInt conversion for wei strings coming off the indexer. Returns 0n
+ * for anything BigInt() would throw on (the real cause of the 500s on some
+ * token pages). Use this instead of BigInt(field) anywhere API data flows.
+ */
+export function toWei(v: unknown): bigint {
+  return isWeiLike(v) ? BigInt(String(v).trim()) : 0n;
+}
+
 export function fmtEth(wei: string | bigint | undefined | null, maxFrac = 4): string {
   if (!isWeiLike(wei)) return "0";
   const n = Number(BigInt(String(wei))) / 1e18;

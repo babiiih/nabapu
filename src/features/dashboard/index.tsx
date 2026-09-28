@@ -14,7 +14,7 @@ import {
   quoteUsdRates,
   type VibesLaunch,
 } from '@/lib/vibes'
-import { fmtEth, fmtPct, shortAddr } from '@/lib/format'
+import { fmtEth, fmtPct, shortAddr, toWei } from '@/lib/format'
 import TokenImage from '@/features/market/components/TokenImage'
 
 const topNav = [
@@ -53,7 +53,7 @@ export function Dashboard() {
   }, [])
 
   const totalVolume = launches.reduce(
-    (acc, l) => acc + BigInt(l.analytics.volume24hWei),
+    (acc, l) => acc + toWei(l.analytics.volume24hWei),
     0n
   )
 

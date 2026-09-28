@@ -8,7 +8,7 @@ import {
   type VibesCandle,
   type VibesActivity,
 } from "@/lib/vibes";
-import { fmtEth } from "@/lib/format";
+import { fmtEth, toWei } from "@/lib/format";
 
 /** Derive a synthetic OHLC series from trade events (fallback when the
  * indexer has no candle buckets yet — every BUY/SELL becomes a price point). */
@@ -18,7 +18,7 @@ function tradesToCandles(rows: VibesActivity[]): VibesCandle[] {
       const eth = activityEthAmount(a);
       const tok = activityTokenAmount(a);
       if (!eth || !tok) return null;
-      const price = Number(BigInt(eth)) / Number(BigInt(tok));
+      const price = Number(toWei(eth)) / Number(toWei(tok));
       return { t: new Date(a.occurredAt).getTime() / 1000, p: price };
     })
     .filter((x): x is { t: number; p: number } => x !== null)
