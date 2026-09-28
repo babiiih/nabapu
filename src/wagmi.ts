@@ -1,4 +1,5 @@
-import { http, createConfig } from "wagmi";
+import { http, createConfig, injected } from "wagmi";
+import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors";
 import { defineChain } from "viem";
 
 /**
@@ -26,7 +27,14 @@ export const robinhoodTestnet = defineChain({
 
 export const wagmiConfig = createConfig({
   chains: [robinhoodTestnet],
-  // EIP-6963 discovery handles injected wallets (MetaMask etc.) automatically.
+  // Explicit connectors so the picker is never empty on browsers without an
+  // injected provider. EIP-6963 still surfaces extra injected wallets.
+  connectors: [
+    injected({ shimDisconnect: true }),
+    metaMask(),
+    coinbaseWallet({ appName: "Nabapu" }),
+    walletConnect({ projectId: "nabapu-rwa-marketplace", showQrModal: true }),
+  ],
   multiInjectedProviderDiscovery: true,
   ssr: false,
   transports: {

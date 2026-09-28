@@ -6,7 +6,7 @@
  * source as /traders on testnet.vibevibe.fun).
  */
 import { useCallback, useEffect, useState } from "react";
-import { useAccount, useDisconnect, useChainId, useBalance } from "wagmi";
+import { useAccount, useDisconnect, useChainId, useBalance, useConnect } from "wagmi";
 import { formatEther } from "viem";
 import {
   listLaunches,
@@ -26,6 +26,11 @@ import TokenImage from "./TokenImage";
 export default function ProfilePage() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const { connectors, connect, isPending, error } = useConnect();
+  // /profile#connect opens the wallet picker directly (legacy deep link).
+  const [pickWallet, setPickWallet] = useState(
+    typeof window !== "undefined" && window.location.hash === "#connect",
+  );
   const chainId = useChainId();
   const onRightChain = chainId === robinhoodTestnet.id;
 
@@ -64,9 +69,45 @@ export default function ProfilePage() {
           Connect a wallet on Robinhood Chain Testnet to see your holdings,
           activity, and collected items.
         </p>
-        <a href="#connect" className="mt-6 inline-block">
-          <Button>Connect wallet</Button>
-        </a>
+
+        {!pickWallet ? (
+          <div className="mt-6 flex justify-center">
+            <Button onClick={() => setPickWallet(true)}>Connect wallet</Button>
+          </div>
+        ) : (
+          <div className="mx-auto mt-6 w-full max-w-sm space-y-2 rounded-md border border-border bg-card p-4 text-left">
+            <p className="text-sm font-medium">Choose a wallet</p>
+            {connectors.map((c) => (
+              <button
+                key={c.uid}
+                disabled={isPending}
+                onClick={() => connect({ connector: c })}
+                className="flex w-full items-center justify-between rounded-md border border-border px-3 py-2 text-sm transition-colors hover:bg-muted disabled:opacity-50"
+              >
+                {c.name}
+                {c.icon && (
+                  <img src={c.icon} alt="" className="h-5 w-5 rounded" />
+                )}
+              </button>
+            ))}
+            {isPending && (
+              <p className="text-xs text-muted-foreground">Opening wallet…</p>
+            )}
+            {error && (
+              <p className="text-xs text-destructive">
+                {"shortMessage" in error
+                  ? (error as { shortMessage: string }).shortMessage
+                  : error.message}
+              </p>
+            )}
+            <button
+              onClick={() => setPickWallet(false)}
+              className="w-full pt-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </section>
     );
   }
