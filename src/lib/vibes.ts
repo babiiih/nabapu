@@ -234,8 +234,10 @@ export async function assetActivity(
   { limit = 40 }: { limit?: number } = {},
 ): Promise<VibesActivity[]> {
   try {
+    // The indexer rejects limit > 100 with a 400, so clamp here as well.
+    const capped = Math.min(limit, 100);
     const j = await getJson(
-      `/launches/${tokenAddress}/activity?limit=${limit}`,
+      `/launches/${tokenAddress}/activity?limit=${capped}`,
     );
     return (j.data.items as VibesActivity[]) ?? [];
   } catch {

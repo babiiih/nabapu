@@ -60,7 +60,7 @@ export default function CandlestickChart({
       let list = await assetCandles(tokenAddress, interval);
       let src = "candles";
       if (list.length === 0) {
-        const trades = await assetActivity(tokenAddress, { limit: 200 });
+        const trades = await assetActivity(tokenAddress, { limit: 100 });
         list = tradesToCandles(trades);
         src = list.length ? "trade history" : "";
       }

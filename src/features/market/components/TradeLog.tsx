@@ -18,7 +18,7 @@ export default function TradeLog({ tokenAddress }: { tokenAddress: string }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const list = await assetActivity(tokenAddress, { limit: 40 });
+      const list = await assetActivity(tokenAddress, { limit: 100 });
       if (!cancelled) setRows(list);
     })();
     return () => {
