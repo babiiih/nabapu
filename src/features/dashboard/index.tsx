@@ -11,13 +11,14 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ConfigDrawer } from '@/components/config-drawer'
 import {
+  getLaunch,
   listLaunches,
   quoteUsdRates,
   type VibesLaunch,
 } from '@/lib/vibes'
-import { fmtEth, fmtPct, shortAddr, timeAgo, toWei } from '@/lib/format'
+import { fmtEth, fmtPct, fmtUsd, shortAddr, timeAgo, toWei } from '@/lib/format'
 import TokenImage from '@/features/market/components/TokenImage'
-import { ISSUER as DEV } from '@/contracts'
+import { ISSUER as DEV, TOKEN } from '@/contracts'
 
 const topNav = [
   { title: 'Overview', href: '/', isActive: true, disabled: false },
@@ -27,8 +28,22 @@ const topNav = [
 
 export function Dashboard() {
   const [launches, setLaunches] = useState<VibesLaunch[]>([])
+  const [featured, setFeatured] = useState<VibesLaunch | null>(null)
   const [ethUsd, setEthUsd] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // NRWA — token utama, di-pin di hero walau sudah kelewat dari "recent"
+  useEffect(() => {
+    let cancelled = false
+    getLaunch(TOKEN.nrwa)
+      .then((l) => {
+        if (!cancelled && l) setFeatured(l)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -104,30 +119,39 @@ export function Dashboard() {
       </Header>
 
       <Main>
-        {/* Hero */}
+        {/* Hero — kartu token utama (NRWA) di kiri-atas, copy di kanan */}
         <div className='hero-panel mb-6 px-6 py-7 relative z-0'>
-          <div className='flex flex-wrap items-end justify-between gap-4'>
+          <div className='grid items-center gap-6 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]'>
             <div>
-              <span className='chip is-live mb-3'>
-                <span
-                  className='inline-block h-1.5 w-1.5 rounded-full bg-current'
-                  style={{ animation: 'skeleton-pulse 1.6s ease-in-out infinite' }}
-                />
-                Live on testnet
-              </span>
-              <h2 className='text-3xl font-bold tracking-tight'>
-                Nabapu RWA Index
-              </h2>
-              <p className='text-muted-foreground mt-1 max-w-[60ch] text-sm'>
-                Real-time launches on Robinhood Chain Testnet (vibes protocol).
-              </p>
+              {featured ? (
+                <FeaturedCard launch={featured} ethUsd={ethUsd} />
+              ) : (
+                <div className='skeleton' style={{ height: '11.5rem', borderRadius: '0.75rem' }} />
+              )}
             </div>
-            <Link
-              to='/market'
-              className='bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center rounded-md px-4 text-sm font-medium transition-colors'
-            >
-              Browse market →
-            </Link>
+            <div className='flex flex-wrap items-end justify-between gap-4'>
+              <div>
+                <span className='chip is-live mb-3'>
+                  <span
+                    className='inline-block h-1.5 w-1.5 rounded-full bg-current'
+                    style={{ animation: 'skeleton-pulse 1.6s ease-in-out infinite' }}
+                  />
+                  Live on testnet
+                </span>
+                <h2 className='text-3xl font-bold tracking-tight'>
+                  Nabapu RWA Index
+                </h2>
+                <p className='text-muted-foreground mt-1 max-w-[60ch] text-sm'>
+                  Real-time launches on Robinhood Chain Testnet (vibes protocol).
+                </p>
+              </div>
+              <Link
+                to='/market'
+                className='bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center rounded-md px-4 text-sm font-medium transition-colors'
+              >
+                Browse market →
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -200,6 +224,80 @@ export function Dashboard() {
         </div>
       </Main>
     </>
+  )
+}
+
+/** Kartu besar untuk token utama (NRWA) — pin di hero halaman utama. */
+function FeaturedCard({
+  launch,
+  ethUsd,
+}: {
+  launch: VibesLaunch
+  ethUsd: number | null
+}) {
+  const grad = launch.curve.lifecycle === 'GRADUATED'
+  const pct = Math.min(100, Math.round(launch.curve.progressBps / 100))
+  const priceEth = Number(toWei(launch.analytics.lastPriceWeiPerToken)) / 1e18
+
+  return (
+    <Link
+      to='/token/$tokenAddress'
+      params={{ tokenAddress: launch.tokenAddress }}
+      className='block rounded-xl border border-primary/40 bg-background/90 p-4 shadow-sm transition-colors hover:border-primary'
+    >
+      <div className='flex items-center gap-3'>
+        <div className='h-14 w-14 shrink-0 overflow-hidden rounded-full border border-primary/40'>
+          <TokenImage
+            uri={launch.content.image?.uri}
+            alt={launch.name}
+            className='!static h-14 w-14 object-cover'
+          />
+        </div>
+        <div className='min-w-0 flex-1'>
+          <div className='flex items-center gap-2'>
+            <span className='text-base font-bold'>${launch.symbol}</span>
+            <span className='chip is-live'>Featured</span>
+          </div>
+          <div className='text-muted-foreground truncate text-xs'>
+            {launch.name} · {shortAddr(launch.tokenAddress)}
+          </div>
+        </div>
+        <div className='shrink-0 text-right'>
+          <div className='num text-sm font-bold'>
+            {fmtEth(launch.analytics.lastPriceWeiPerToken, 9)} ETH
+          </div>
+          {ethUsd ? (
+            <div className='text-muted-foreground num text-xs'>
+              ≈ {fmtUsd(priceEth * ethUsd * 100)}
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className='mt-3 grid grid-cols-3 gap-2 text-center text-xs'>
+        <div>
+          <div className='text-muted-foreground'>Holders</div>
+          <div className='num font-semibold'>{launch.holderCount ?? 0}</div>
+        </div>
+        <div>
+          <div className='text-muted-foreground'>24h vol</div>
+          <div className='num font-semibold'>
+            {fmtEth(launch.analytics.volume24hWei)} ETH
+          </div>
+        </div>
+        <div>
+          <div className='text-muted-foreground'>Curve</div>
+          <div className='num font-semibold'>{grad ? 'Graduated' : `${pct}%`}</div>
+        </div>
+      </div>
+
+      <div className='curve-track mt-3'>
+        <span style={{ width: pct + '%' }} />
+      </div>
+      <span className='text-primary mt-2 inline-block text-xs font-medium'>
+        View token →
+      </span>
+    </Link>
   )
 }
 
