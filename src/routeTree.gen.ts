@@ -14,6 +14,9 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedMarketIndexRouteImport } from './routes/_authenticated/market/index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedTokenTokenAddressRouteImport } from './routes/_authenticated/token/$tokenAddress'
+import { Route as AuthenticatedTrenchesIndexRouteImport } from './routes/_authenticated/trenches/index'
+import { Route as AuthenticatedTrendingIndexRouteImport } from './routes/_authenticated/trending/index'
+import { Route as AuthenticatedWalletIndexRouteImport } from './routes/_authenticated/wallet/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -42,18 +45,42 @@ const AuthenticatedTokenTokenAddressRoute =
     path: '/token/$tokenAddress',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTrenchesIndexRoute =
+  AuthenticatedTrenchesIndexRouteImport.update({
+    id: '/trenches/',
+    path: '/trenches/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTrendingIndexRoute =
+  AuthenticatedTrendingIndexRouteImport.update({
+    id: '/trending/',
+    path: '/trending/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedWalletIndexRoute =
+  AuthenticatedWalletIndexRouteImport.update({
+    id: '/wallet/',
+    path: '/wallet/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/market/': typeof AuthenticatedMarketIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
+  '/trenches/': typeof AuthenticatedTrenchesIndexRoute
+  '/trending/': typeof AuthenticatedTrendingIndexRoute
+  '/wallet/': typeof AuthenticatedWalletIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/market': typeof AuthenticatedMarketIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/trenches': typeof AuthenticatedTrenchesIndexRoute
+  '/trending': typeof AuthenticatedTrendingIndexRoute
+  '/wallet': typeof AuthenticatedWalletIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +89,29 @@ export interface FileRoutesById {
   '/_authenticated/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/_authenticated/market/': typeof AuthenticatedMarketIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/_authenticated/trenches/': typeof AuthenticatedTrenchesIndexRoute
+  '/_authenticated/trending/': typeof AuthenticatedTrendingIndexRoute
+  '/_authenticated/wallet/': typeof AuthenticatedWalletIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/token/$tokenAddress' | '/market/' | '/profile/'
+  fullPaths:
+    | '/'
+    | '/token/$tokenAddress'
+    | '/market/'
+    | '/profile/'
+    | '/trenches/'
+    | '/trending/'
+    | '/wallet/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/token/$tokenAddress' | '/market' | '/profile'
+  to:
+    | '/'
+    | '/token/$tokenAddress'
+    | '/market'
+    | '/profile'
+    | '/trenches'
+    | '/trending'
+    | '/wallet'
   id:
     | '__root__'
     | '/_authenticated'
@@ -75,6 +119,9 @@ export interface FileRouteTypes {
     | '/_authenticated/token/$tokenAddress'
     | '/_authenticated/market/'
     | '/_authenticated/profile/'
+    | '/_authenticated/trenches/'
+    | '/_authenticated/trending/'
+    | '/_authenticated/wallet/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,6 +165,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTokenTokenAddressRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/trenches/': {
+      id: '/_authenticated/trenches/'
+      path: '/trenches'
+      fullPath: '/trenches/'
+      preLoaderRoute: typeof AuthenticatedTrenchesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trending/': {
+      id: '/_authenticated/trending/'
+      path: '/trending'
+      fullPath: '/trending/'
+      preLoaderRoute: typeof AuthenticatedTrendingIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/wallet/': {
+      id: '/_authenticated/wallet/'
+      path: '/wallet'
+      fullPath: '/wallet/'
+      preLoaderRoute: typeof AuthenticatedWalletIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -126,6 +194,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTokenTokenAddressRoute: typeof AuthenticatedTokenTokenAddressRoute
   AuthenticatedMarketIndexRoute: typeof AuthenticatedMarketIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
+  AuthenticatedTrenchesIndexRoute: typeof AuthenticatedTrenchesIndexRoute
+  AuthenticatedTrendingIndexRoute: typeof AuthenticatedTrendingIndexRoute
+  AuthenticatedWalletIndexRoute: typeof AuthenticatedWalletIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -133,6 +204,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedTokenTokenAddressRoute: AuthenticatedTokenTokenAddressRoute,
   AuthenticatedMarketIndexRoute: AuthenticatedMarketIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
+  AuthenticatedTrenchesIndexRoute: AuthenticatedTrenchesIndexRoute,
+  AuthenticatedTrendingIndexRoute: AuthenticatedTrendingIndexRoute,
+  AuthenticatedWalletIndexRoute: AuthenticatedWalletIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
