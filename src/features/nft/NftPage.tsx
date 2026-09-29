@@ -108,9 +108,14 @@ export default function NftPage() {
         void myBalance.refetch();
       }, 6000);
     } catch (e) {
-      const msg = (e as { shortMessage?: string; message?: string }).shortMessage
-        || (e as Error).message || "mint failed";
-      setErr(msg.slice(0, 160));
+      const err = e as { code?: number; shortMessage?: string; message?: string };
+      const msg = err.shortMessage || err.message || "mint failed";
+      // -32002 = MetaMask sudah punya request tertunda (popup kebuka/nyangkut)
+      setErr(
+        err.code === -32002 || msg.includes("Requested resource not available")
+          ? "⚠️ MetaMask masih punya permintaan tertunda. Buka popup MetaMask-nya (cek ikon extension) — approve atau batal dulu — lalu coba lagi."
+          : msg.slice(0, 160),
+      );
     }
   };
 

@@ -306,6 +306,15 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
   const [ok, setOk] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
+  /** -32002 (viem: "Requested resource not available.") = MetaMask punya popup/request tertunda. */
+  const humanErr = (e: unknown): string => {
+    const t = e as { code?: number; shortMessage?: string; message?: string };
+    const msg = t.shortMessage || t.message || "transaction failed";
+    return t.code === -32002 || msg.includes("Requested resource not available")
+      ? "⚠️ MetaMask still has a pending request. Open the MetaMask popup (check the extension icon) — approve or dismiss it first, then retry."
+      : msg.slice(0, 160);
+  };
+
   const ethBal = useBalance({ address });
   const tokenBal = useReadContract({
     address: token,
@@ -386,7 +395,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
         setAmount("");
       }
     } catch (e) {
-      setErr((e as Error).message.slice(0, 180));
+      setErr(humanErr(e));
     }
   };
 
