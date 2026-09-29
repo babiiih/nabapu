@@ -22,10 +22,12 @@ export function fmtEth(wei: string | bigint | undefined | null, maxFrac = 4): st
   const n = Number(BigInt(String(wei))) / 1e18;
   if (!isFinite(n)) return "0";
   if (n === 0) return "0";
-  // tiny-but-real amounts: fixed decimals first, exponential only below 1e-8
+  // tiny-but-real amounts: always fixed notation — "1.66e-9" means nothing
+  // to a human reading a price. Keep ~3 significant digits, trim zeros.
   if (n < 0.0001) {
-    if (n < 1e-8) return n.toExponential(2);
-    return n.toLocaleString(undefined, { maximumFractionDigits: 8, useGrouping: false });
+    const dec = Math.min(18, Math.ceil(-Math.log10(n)) + 2);
+    const s = n.toFixed(dec).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
+    return s === "0" ? n.toExponential(2) : s; // only absurd <1e-18 fallback
   }
   return n.toLocaleString(undefined, { maximumFractionDigits: maxFrac });
 }
@@ -45,6 +47,11 @@ export function fmtTokens(baseUnits: string | bigint | undefined | null, maxFrac
 export function fmtUsd(cents: string | number | undefined | null): string {
   if (!cents) return "$0";
   const n = Number(cents) / 100;
+  // micro-cap prices: 2 decimals would render "$0" — keep significant digits.
+  if (n > 0 && n < 0.01) {
+    const dec = Math.min(12, Math.ceil(-Math.log10(n)) + 2);
+    return "$" + n.toFixed(dec).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
+  }
   return "$" + n.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 

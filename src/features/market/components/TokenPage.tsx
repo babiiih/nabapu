@@ -8,11 +8,11 @@
 import { useEffect, useState } from "react";
 import { useAccount, useBalance, useConnect, useReadContract, useWriteContract } from "wagmi";
 import { parseAbi, parseEther, formatEther } from "viem";
-import { getLaunch, type VibesLaunch } from "@/lib/vibes";
+import { getLaunch, quoteUsdRates, type VibesLaunch } from "@/lib/vibes";
 import { Link } from "@tanstack/react-router";
 import CandlestickChart from "./CandlestickChart";
 import TradeLog from "./TradeLog";
-import { fmtEth, fmtTokens, shortAddr, timeAgo, toWei } from "@/lib/format";
+import { fmtEth, fmtUsd, fmtTokens, shortAddr, timeAgo, toWei } from "@/lib/format";
 import TokenImage from "./TokenImage";
 import { Button } from "@/components/ui/button";
 import { CHAIN } from "@/contracts";
@@ -36,6 +36,20 @@ export default function TokenPage({ address }: { address: string }) {
   const [launch, setLaunch] = useState<VibesLaunch | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [ethUsd, setEthUsd] = useState<number | null>(null);
+
+  // ETH/USD rate — shows a familiar $ figure under the tiny ETH price.
+  useEffect(() => {
+    let stop = false;
+    quoteUsdRates().then((r) => {
+      if (stop) return;
+      const c = Number(r[0]?.usdPerQuoteCents);
+      if (isFinite(c) && c > 0) setEthUsd(c / 100);
+    });
+    return () => {
+      stop = true;
+    };
+  }, []);
 
   useEffect(() => {
     let stop = false;
@@ -129,7 +143,16 @@ export default function TokenPage({ address }: { address: string }) {
           </p>
 
           <dl className="mt-6 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-            <Stat label="Last price" value={`${fmtEth(launch.analytics.lastPriceWeiPerToken, 9)} ETH`} accent />
+            <Stat
+              label="Last price"
+              value={`${fmtEth(launch.analytics.lastPriceWeiPerToken, 9)} ETH`}
+              sub={
+                ethUsd
+                  ? `≈ ${fmtUsd((Number(toWei(launch.analytics.lastPriceWeiPerToken)) / 1e18) * ethUsd * 100)}`
+                  : undefined
+              }
+              accent
+            />
             <Stat label="24h volume" value={`${fmtEth(launch.analytics.volume24hWei)} ETH`} />
             <Stat label="Holders" value={String(launch.holderCount ?? 0)} />
             <Stat
@@ -187,11 +210,13 @@ import { ISSUER } from "@/contracts";
 function Stat({
   label,
   value,
+  sub,
   mono,
   accent,
 }: {
   label: string;
   value: string;
+  sub?: string;
   mono?: boolean;
   accent?: boolean;
 }) {
@@ -205,6 +230,9 @@ function Stat({
       >
         {value}
       </dd>
+      {sub && (
+        <div className="text-muted-foreground mt-0.5 text-[0.6875rem]">{sub}</div>
+      )}
     </div>
   );
 }
