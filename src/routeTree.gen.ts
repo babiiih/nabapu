@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedMarketIndexRouteImport } from './routes/_authenticated/market/index'
+import { Route as AuthenticatedNftIndexRouteImport } from './routes/_authenticated/nft/index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedTokenTokenAddressRouteImport } from './routes/_authenticated/token/$tokenAddress'
 import { Route as AuthenticatedTrenchesIndexRouteImport } from './routes/_authenticated/trenches/index'
@@ -33,6 +34,11 @@ const AuthenticatedMarketIndexRoute =
     path: '/market/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedNftIndexRoute = AuthenticatedNftIndexRouteImport.update({
+  id: '/nft/',
+  path: '/nft/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProfileIndexRoute =
   AuthenticatedProfileIndexRouteImport.update({
     id: '/profile/',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/market/': typeof AuthenticatedMarketIndexRoute
+  '/nft/': typeof AuthenticatedNftIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/trenches/': typeof AuthenticatedTrenchesIndexRoute
   '/trending/': typeof AuthenticatedTrendingIndexRoute
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/': typeof AuthenticatedIndexRoute
   '/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/market': typeof AuthenticatedMarketIndexRoute
+  '/nft': typeof AuthenticatedNftIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/trenches': typeof AuthenticatedTrenchesIndexRoute
   '/trending': typeof AuthenticatedTrendingIndexRoute
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/_authenticated/market/': typeof AuthenticatedMarketIndexRoute
+  '/_authenticated/nft/': typeof AuthenticatedNftIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/trenches/': typeof AuthenticatedTrenchesIndexRoute
   '/_authenticated/trending/': typeof AuthenticatedTrendingIndexRoute
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/'
     | '/token/$tokenAddress'
     | '/market/'
+    | '/nft/'
     | '/profile/'
     | '/trenches/'
     | '/trending/'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/'
     | '/token/$tokenAddress'
     | '/market'
+    | '/nft'
     | '/profile'
     | '/trenches'
     | '/trending'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/token/$tokenAddress'
     | '/_authenticated/market/'
+    | '/_authenticated/nft/'
     | '/_authenticated/profile/'
     | '/_authenticated/trenches/'
     | '/_authenticated/trending/'
@@ -149,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/market'
       fullPath: '/market/'
       preLoaderRoute: typeof AuthenticatedMarketIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/nft/': {
+      id: '/_authenticated/nft/'
+      path: '/nft'
+      fullPath: '/nft/'
+      preLoaderRoute: typeof AuthenticatedNftIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/profile/': {
@@ -193,6 +212,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedTokenTokenAddressRoute: typeof AuthenticatedTokenTokenAddressRoute
   AuthenticatedMarketIndexRoute: typeof AuthenticatedMarketIndexRoute
+  AuthenticatedNftIndexRoute: typeof AuthenticatedNftIndexRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
   AuthenticatedTrenchesIndexRoute: typeof AuthenticatedTrenchesIndexRoute
   AuthenticatedTrendingIndexRoute: typeof AuthenticatedTrendingIndexRoute
@@ -203,6 +223,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedTokenTokenAddressRoute: AuthenticatedTokenTokenAddressRoute,
   AuthenticatedMarketIndexRoute: AuthenticatedMarketIndexRoute,
+  AuthenticatedNftIndexRoute: AuthenticatedNftIndexRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedTrenchesIndexRoute: AuthenticatedTrenchesIndexRoute,
   AuthenticatedTrendingIndexRoute: AuthenticatedTrendingIndexRoute,

@@ -1,0 +1,11 @@
+{
+  "name": "Nabapu 1000 #382",
+  "description": "One of 1,000 Nabapu collectibles on Robinhood Chain Testnet. Free mint — gas only.",
+  "image": "https://web2-one-red.vercel.app/nft/NFT_0382_Common.jpg",
+  "attributes": [
+    {
+      "trait_type": "Rarity",
+      "value": "Common"
+    }
+  ]
+}

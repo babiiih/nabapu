@@ -6,6 +6,7 @@ import {
   Flame,
   Rocket,
   Search,
+  Sparkles,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -50,6 +51,11 @@ export const sidebarData: SidebarData = {
           title: 'Wallet',
           url: '/wallet',
           icon: Search,
+        },
+        {
+          title: 'NFT',
+          url: '/nft',
+          icon: Sparkles,
         },
         {
           title: 'Profile',
