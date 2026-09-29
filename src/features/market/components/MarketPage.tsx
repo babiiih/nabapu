@@ -248,19 +248,27 @@ function TokenCard({ launch }: { launch: VibesLaunch }) {
       </div>
 
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className={grad ? "text-destructive font-medium" : ""}>
-          {grad ? "Graduated" : `${pct}%`}
+        <span title="Bonding-curve progress" className={grad ? "text-destructive font-medium" : ""}>
+          {grad ? "Graduated" : `curve ${pct}%`}
         </span>
         <span className="tabular-nums">
           {launch.holderCount ?? 0} holder{(launch.holderCount ?? 0) === 1 ? "" : "s"}
         </span>
       </div>
 
-      <div className="flex items-center justify-between gap-2 border-t border-border pt-2 text-xs">
-        <span className="text-muted-foreground">
+      <div className="flex items-center justify-between border-t border-border pt-2 text-xs">
+        <span className="text-muted-foreground tabular-nums">
           {fmtEth(launch.analytics.volume24hWei)} ETH 24h
         </span>
-        <span className={up ? "text-foreground" : "text-destructive"}>
+        <span
+          className={
+            change === 0
+              ? "text-muted-foreground tabular-nums"
+              : up
+                ? "text-primary font-medium tabular-nums"
+                : "text-destructive font-medium tabular-nums"
+          }
+        >
           {fmtPct(launch.analytics.priceChange24hBps)}
         </span>
       </div>

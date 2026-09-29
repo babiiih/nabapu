@@ -22,7 +22,11 @@ export function fmtEth(wei: string | bigint | undefined | null, maxFrac = 4): st
   const n = Number(BigInt(String(wei))) / 1e18;
   if (!isFinite(n)) return "0";
   if (n === 0) return "0";
-  if (n < 0.0001) return n.toExponential(2);
+  // tiny-but-real amounts: fixed decimals first, exponential only below 1e-8
+  if (n < 0.0001) {
+    if (n < 1e-8) return n.toExponential(2);
+    return n.toLocaleString(undefined, { maximumFractionDigits: 8, useGrouping: false });
+  }
   return n.toLocaleString(undefined, { maximumFractionDigits: maxFrac });
 }
 
