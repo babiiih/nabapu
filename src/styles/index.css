@@ -188,6 +188,10 @@
   padding: 0.625rem 0.75rem;
   border-bottom: 1px solid var(--border);
   font-size: 0.8125rem;
+  transition: background 0.15s ease;
+}
+.feed-row:hover {
+  background: color-mix(in oklch, var(--accent) 55%, transparent);
 }
 .feed-row:last-child {
   border-bottom: 0;
@@ -199,10 +203,12 @@
   background: var(--muted-foreground);
 }
 .feed-dot.is-buy {
-  background: var(--foreground);
+  background: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 18%, transparent);
 }
 .feed-dot.is-sell {
   background: var(--destructive);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 18%, transparent);
 }
 
 /* *=========== Toast notifications (OpenSea-style) =========== */
@@ -257,4 +263,60 @@
 .mono {
   font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono',
     monospace;
+}
+
+/* *=========== Skeleton (was referenced by MarketPage but never defined) =========== */
+.skeleton {
+  display: block;
+  background: color-mix(in oklch, var(--muted) 80%, var(--border) 20%);
+  border-radius: var(--radius);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* *=========== Dashboard hero =========== */
+.hero-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(
+      120% 140% at 8% -20%,
+      color-mix(in oklch, var(--primary) 16%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--card);
+}
+.hero-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 62%,
+    color-mix(in oklch, var(--primary) 7%, transparent) 100%
+  );
+}
+
+/* stat card: tinted icon chip, no more floating grey glyph */
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: calc(var(--radius) - 2px);
+  color: var(--primary);
+  background: color-mix(in oklch, var(--primary) 12%, transparent);
+  border: 1px solid color-mix(in oklch, var(--primary) 24%, transparent);
 }
