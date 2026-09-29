@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import fs from 'fs';
 
 const BASE = 'https://web2-one-red.vercel.app';
-const OUT = 'E:/tmp/ui-audit';
+const OUT = 'E:/tmp/ui-audit/after';
 fs.mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch({ channel: 'chrome' });

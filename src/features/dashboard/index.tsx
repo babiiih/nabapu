@@ -237,7 +237,7 @@ function LaunchCard({ launch }: { launch: VibesLaunch }) {
       </div>
 
       <div className='curve-track' title={`Curve progress ${pct}%`}>
-        <span style={{ width: pct + '%' }} />
+        <span style={{ width: Math.max(pct, 0.8) + '%' }} />
       </div>
 
       <div className='text-muted-foreground flex items-center justify-between text-xs'>
@@ -253,7 +253,7 @@ function LaunchCard({ launch }: { launch: VibesLaunch }) {
           {shortAddr(launch.tokenAddress)}
         </span>
       </div>
-      <div className='text-muted-foreground/70 flex items-center justify-between text-[0.6875rem]'>
+      <div className='text-muted-foreground flex items-center justify-between text-[0.6875rem]'>
         <span className='tabular-nums'>{fmtPct(launch.curve.progressBps)}</span>
         <span>{timeAgo(launch.createdAt)} ago</span>
       </div>
