@@ -1,4 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="24" height="24"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokewidth="2" strokelinecap="round" strokelinejoin="round">
-  <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"></path>
-</svg><style>@media (prefers-color-scheme: light) { :root { filter: contrast(1) brightness(0.8); } }
-</style></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34d399"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#g)"/>
+  <g fill="#052e22">
+    <rect x="14" y="14" width="15" height="15" rx="4"/>
+    <rect x="33" y="14" width="15" height="15" rx="4" opacity=".72" transform="translate(4 -4)"/>
+    <rect x="14" y="33" width="15" height="15" rx="4" opacity=".72"/>
+    <rect x="33" y="33" width="15" height="15" rx="4"/>
+  </g>
+</svg>

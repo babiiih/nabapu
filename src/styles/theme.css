@@ -1,7 +1,6 @@
 :root {
   --radius: 0.625rem;
-  /* Nabapu brand — emerald. The shadcn default here was pure neutral grey
-   * (0 chroma), which left the whole app without a visual identity. */
+  /* Nabapu brand — emerald accent set explicitly for visual identity. */
   --background: oklch(1 0.005 160);
   --foreground: oklch(0.18 0.02 165);
   --card: oklch(1 0.004 160);
