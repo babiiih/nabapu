@@ -4,7 +4,7 @@
  * normalisasi, refresh manual + auto tiap 60s.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { listLaunches, type VibesLaunch } from "@/lib/vibes";
 import { fmtEth, fmtPct, timeAgo, shortAddr, toWei } from "@/lib/format";
 import TokenImage from "@/features/market/components/TokenImage";
@@ -21,6 +21,7 @@ function heat(l: VibesLaunch): number {
 }
 
 export default function TrendingPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState<VibesLaunch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -172,37 +173,47 @@ export default function TrendingPage() {
                   const pct = Math.min(100, Math.round(l.curve.progressBps / 100));
                   const grad = l.curve.lifecycle === "GRADUATED";
                   return (
-                    <Link
+                    <tr
                       key={l.tokenAddress}
-                      to="/token/$tokenAddress"
-                      params={{ tokenAddress: l.tokenAddress }}
-                      className="border-border hover:bg-muted/50 flex items-center gap-3 border-b px-3 py-2.5 transition-colors last:border-b-0"
+                      onClick={() =>
+                        void navigate({
+                          to: "/token/$tokenAddress",
+                          params: { tokenAddress: l.tokenAddress },
+                        })
+                      }
+                      className="border-border hover:bg-muted/50 cursor-pointer border-b transition-colors last:border-b-0"
                     >
-                      <span
-                        className={`num w-7 shrink-0 text-right text-sm font-bold ${
-                          i < 3 ? "text-primary" : "text-muted-foreground"
-                        }`}
-                      >
-                        {i + 1}
-                      </span>
-                      <span className="border-border bg-muted flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border">
-                        <TokenImage
-                          uri={l.content.image?.uri}
-                          alt={l.symbol}
-                          className="!static !size-full"
-                        />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-bold">${l.symbol}</span>
-                        <span className="text-muted-foreground block truncate text-xs">
-                          {l.name} · <span className="mono">{shortAddr(l.tokenAddress)}</span>
+                      <td className="px-3 py-2.5">
+                        <span
+                          className={`num block text-right text-sm font-bold ${
+                            i < 3 ? "text-primary" : "text-muted-foreground"
+                          }`}
+                        >
+                          {i + 1}
                         </span>
-                      </span>
-                      <span className="num w-24 shrink-0 text-right text-xs">
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <span className="flex items-center gap-3">
+                          <span className="border-border bg-muted flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border">
+                            <TokenImage
+                              uri={l.content.image?.uri}
+                              alt={l.symbol}
+                              className="!static !size-full"
+                            />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-sm font-bold">${l.symbol}</span>
+                            <span className="text-muted-foreground block truncate text-xs">
+                              {l.name} · <span className="mono">{shortAddr(l.tokenAddress)}</span>
+                            </span>
+                          </span>
+                        </span>
+                      </td>
+                      <td className="num px-3 py-2.5 text-right text-xs">
                         {fmtEth(l.analytics.lastPriceWeiPerToken, 9)} ETH
-                      </span>
-                      <span
-                        className={`num w-20 shrink-0 text-right text-xs font-medium ${
+                      </td>
+                      <td
+                        className={`num px-3 py-2.5 text-right text-xs font-medium ${
                           change === 0
                             ? "text-muted-foreground"
                             : change > 0
@@ -211,25 +222,25 @@ export default function TrendingPage() {
                         }`}
                       >
                         {fmtPct(l.analytics.priceChange24hBps)}
-                      </span>
-                      <span className="num w-24 shrink-0 text-right text-xs">
+                      </td>
+                      <td className="num px-3 py-2.5 text-right text-xs">
                         {fmtEth(l.analytics.volume24hWei)} ETH
-                      </span>
-                      <span className="num w-16 shrink-0 text-right text-xs">
+                      </td>
+                      <td className="num px-3 py-2.5 text-right text-xs">
                         {l.holderCount ?? 0}
-                      </span>
-                      <span className="num w-16 shrink-0 text-right text-xs">
+                      </td>
+                      <td className="num px-3 py-2.5 text-right text-xs">
                         {l.analytics.uniqueBuyers1h ?? 0}
-                      </span>
-                      <span className="w-24 shrink-0 text-right text-xs">
+                      </td>
+                      <td className="px-3 py-2.5 text-right text-xs">
                         <span className={grad ? "text-destructive font-medium" : ""}>
                           {grad ? "Grad" : `${pct}%`}
                         </span>
-                      </span>
-                      <span className="text-muted-foreground w-16 shrink-0 text-right text-xs">
+                      </td>
+                      <td className="text-muted-foreground px-3 py-2.5 text-right text-xs">
                         {timeAgo(l.createdAt)}
-                      </span>
-                    </Link>
+                      </td>
+                    </tr>
                   );
                 })}
           </tbody>
