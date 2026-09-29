@@ -1,8 +1,9 @@
 /**
- * Nabapu 1000 — halaman free-mint ERC-721.
+ * Nabapu 1000 v2 — halaman free-mint ERC-721 (RARITY RANDOM).
  *
- * Kontrak: 0x8B109646…5C2f (Robinhood Chain Testnet, deploy oleh dev wallet).
- * mint() tanpa pembayaran (gas only), supply 1000, id sekuensial.
+ * Kontrak: 0xcA58B078…469D (Robinhood Chain Testnet, deploy oleh dev wallet).
+ * mint() tanpa pembayaran (gas only), pool 1000 ID — ID diacak on-chain
+ * (lazy Fisher-Yates) jadi rarity yang didapat murni keberuntungan.
  * Galeri + rarity filter dari public/nft/manifest.json.
  */
 import { useEffect, useMemo, useState } from "react";
@@ -130,7 +131,11 @@ export default function NftPage() {
           <h1 className="text-3xl font-bold tracking-tight">Nabapu 1000</h1>
           <p className="text-muted-foreground mt-1 max-w-[70ch] text-sm">
             1,000 collectibles on Robinhood Chain Testnet — Common to Legendary.
-            Sequential IDs, first come first served.
+            {" "}
+            <span className="text-foreground font-medium">
+              Rarity is random per mint
+            </span>{" "}
+            (pulled from the pool on-chain) — first come first served.
           </p>
         </div>
         <div className="border-border bg-card rounded-lg border px-4 py-3 text-right">

@@ -18,5 +18,5 @@ export const CHAIN = {
 
 export const ISSUER = "0x35F76E0d2D955beED6e3752F24b4c2570e481B04";
 
-/** $NB1000 — Nabapu 1000 free-mint ERC-721 (Robinhood Chain Testnet). */
-export const NFT_COLLECTION = "0x8B1096462757698971f0F3516387B90EFE8C5C2f";
+/** $NB1000 — Nabapu 1000 free-mint ERC-721 v2 (RANDOM rarity pool, Robinhood Chain Testnet). */
+export const NFT_COLLECTION = "0xcA58B07830cFc271feA19E8BfA3Bb7dcE48d469D";
