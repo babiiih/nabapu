@@ -8,7 +8,7 @@ import {
   type VibesCandle,
   type VibesActivity,
 } from "@/lib/vibes";
-import { fmtEth, toWei } from "@/lib/format";
+import { toWei } from "@/lib/format";
 
 /** Derive a synthetic OHLC series from trade events (fallback when the
  * indexer has no candle buckets yet — every BUY/SELL becomes a price point). */
@@ -18,20 +18,39 @@ function tradesToCandles(rows: VibesActivity[]): VibesCandle[] {
       const eth = activityEthAmount(a);
       const tok = activityTokenAmount(a);
       if (!eth || !tok) return null;
-      const price = Number(toWei(eth)) / Number(toWei(tok));
-      return { t: new Date(a.occurredAt).getTime() / 1000, p: price };
+      const ethN = Number(toWei(eth));
+      const tokN = Number(toWei(tok));
+      if (!Number.isFinite(ethN) || !Number.isFinite(tokN) || ethN <= 0 || tokN <= 0) return null;
+      const price = ethN / tokN;
+      if (!Number.isFinite(price) || price <= 0) return null;
+      const t = Date.parse(a.occurredAt) / 1000;
+      if (!Number.isFinite(t)) return null;
+      return { t, p: price };
     })
     .filter((x): x is { t: number; p: number } => x !== null)
     .sort((a, b) => a.t - b.t);
   if (pts.length === 0) return [];
-  return pts.map((x) => ({
-    t: x.t,
-    o: String(pts[0].p),
-    h: String(Math.max(x.p, ...pts.map((q) => q.p))),
-    l: String(Math.min(x.p, ...pts.map((q) => q.p))),
-    c: String(x.p),
-    v: "0",
-  }));
+  // OHLC per point: open = previous close, high/low = body extremes.
+  return pts.map((x, i) => {
+    const o = i > 0 ? pts[i - 1].p : x.p;
+    const c = x.p;
+    return {
+      t: x.t,
+      o: String(o),
+      h: String(Math.max(o, c)),
+      l: String(Math.min(o, c)),
+      c: String(c),
+      v: "0",
+    };
+  });
+}
+
+/** ETH-per-token prices are ~1e-9 — toLocaleString rounds them to 0.00.
+ * Use significant digits so the axis shows 0.00000000164, not 0. */
+function fmtPriceLabel(p: number): string {
+  if (!Number.isFinite(p) || p === 0) return "0";
+  if (Math.abs(p) < 1e-4) return p.toPrecision(3).replace(/e-?(\d+)$/, "e-$1");
+  return p.toLocaleString(undefined, { maximumFractionDigits: 6 });
 }
 
 /**
@@ -60,7 +79,9 @@ export default function CandlestickChart({
     (async () => {
       let list = await assetCandles(tokenAddress, interval);
       let src = "candles";
-      if (list.length === 0) {
+      // Fewer than 3 buckets = a useless chart (single flat candle) —
+      // build a series from the actual trades instead.
+      if (list.length < 3) {
         const [trades0, extraTrades] = await Promise.all([
           assetActivity(tokenAddress, { limit: 100 }),
           explorerActivity(tokenAddress),
@@ -68,8 +89,11 @@ export default function CandlestickChart({
         const seen = new Set<string>();
         const trades = [...trades0, ...extraTrades]
           .filter((t) => t.txHash && !seen.has(t.txHash) && seen.add(t.txHash));
-        list = tradesToCandles(trades);
-        src = list.length ? "trade history + on-chain" : "";
+        const fromTrades = tradesToCandles(trades);
+        if (fromTrades.length > list.length) {
+          list = fromTrades;
+          src = "trade history";
+        }
       }
       if (!cancelled) {
         setCandles(list);
@@ -104,8 +128,10 @@ export default function CandlestickChart({
 
     const hi = Math.max(...candles.map((c) => Number(c.h)));
     const lo = Math.min(...candles.map((c) => Number(c.l)));
-    const span = hi - lo || 1;
-    const pad = span * 0.08;
+    if (!Number.isFinite(hi) || !Number.isFinite(lo)) return;
+    const span = hi - lo;
+    // single flat candle → pad relative to price magnitude, not absolute
+    const pad = span > 0 ? span * 0.08 : Math.max(Math.abs(hi) * 0.05, 1e-12);
     const top = hi + pad;
     const bot = lo - pad;
 
@@ -131,7 +157,7 @@ export default function CandlestickChart({
       ctx.moveTo(padL, yy);
       ctx.lineTo(padL + plotW, yy);
       ctx.stroke();
-      ctx.fillText(fmtEth(String(Math.round(p * 1e12)), 6), padL + plotW + 6, yy + 3);
+      ctx.fillText(fmtPriceLabel(p), padL + plotW + 6, yy + 3);
     }
 
     const n = candles.length;

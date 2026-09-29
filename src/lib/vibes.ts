@@ -212,7 +212,23 @@ export async function assetCandles(
     if (to) p.set("to", String(to));
     const j = await getJson(`/launches/${tokenAddress}/candles?${p.toString()}`);
     const d = j.data ?? {};
-    return (d.candles as VibesCandle[]) ?? (d.items as VibesCandle[]) ?? [];
+    const raw = (d.candles ?? d.items ?? []) as any[];
+    // The indexer returns bucket shape ({bucketStart, openPriceWeiPerToken…})
+    // while the chart expects {t,o,h,l,c,v}. Map + drop anything non-numeric,
+    // otherwise Number(undefined) = NaN takes the whole canvas down.
+    return raw
+      .map((k): VibesCandle | null => {
+        const t = Date.parse(k.bucketStart ?? k.t ?? "") / 1000;
+        const o = String(k.o ?? k.openPriceWeiPerToken ?? "");
+        const h = String(k.h ?? k.highPriceWeiPerToken ?? "");
+        const l = String(k.l ?? k.lowPriceWeiPerToken ?? "");
+        const c = String(k.c ?? k.closePriceWeiPerToken ?? "");
+        const v = String(k.v ?? k.volumeWei ?? "0");
+        const num = (s: string) => /^\d+$/.test(s) && Number.isFinite(Number(s));
+        if (!Number.isFinite(t) || !num(o) || !num(h) || !num(l) || !num(c)) return null;
+        return { t, o, h, l, c, v };
+      })
+      .filter((x): x is VibesCandle => x !== null);
   } catch {
     return [];
   }
