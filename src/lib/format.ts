@@ -47,6 +47,7 @@ export function fmtUsd(cents: string | number | undefined | null): string {
 export function fmtPct(bps: number | string | undefined | null): string {
   if (bps === undefined || bps === null) return "0%";
   const n = Number(bps) / 100;
+  if (Math.abs(n) < 0.05) return "0%"; // neutral zero — no fake "+0.0%"
   return (n >= 0 ? "+" : "") + n.toFixed(1) + "%";
 }
 

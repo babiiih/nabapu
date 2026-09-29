@@ -103,12 +103,19 @@
   color: var(--card-foreground);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  transition: border-color 0.12s linear, transform 0.12s linear;
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.04);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   cursor: pointer;
 }
 .token-card:hover {
-  border-color: color-mix(in oklch, var(--foreground) 40%, transparent);
+  border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
   transform: translateY(-2px);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.04),
+    0 12px 24px -12px color-mix(in oklch, var(--primary) 35%, transparent);
 }
 .token-card .thumb {
   position: relative;
@@ -132,10 +139,10 @@
 
 .curve-track {
   position: relative;
-  height: 3px;
+  height: 4px;
   width: 100%;
-  background: var(--muted);
-  border-radius: 1px;
+  background: color-mix(in oklch, var(--muted) 70%, var(--border) 30%);
+  border-radius: 2px;
   overflow: hidden;
 }
 .curve-track > span {
@@ -263,6 +270,9 @@
 .mono {
   font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono',
     monospace;
+}
+.num {
+  font-variant-numeric: tabular-nums;
 }
 
 /* *=========== Skeleton (was referenced by MarketPage but never defined) =========== */

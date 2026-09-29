@@ -85,39 +85,61 @@ export default function MarketPage() {
 
   return (
     <section className="container py-10">
-      <div className="mb-6 flex flex-col gap-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-bold">Market</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Live launches on{" "}
-              <a
-                href="https://testnet.vibevibe.fun"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="underline underline-offset-2 hover:text-foreground"
-              >
-                testnet.vibevibe.fun
-              </a>{" "}
-              — bonding-curve tokens on Robinhood Chain Testnet. Synced from the
-              vibes indexer.
-            </p>
-          </div>
-          {page && (
-            <span className="text-xs text-muted-foreground mono">
-              {items.length} of {page.hasMore ? "many" : items.length} launches
-            </span>
-          )}
+      <div className='flex flex-wrap items-baseline justify-between gap-3'>
+        <div>
+          <span className='chip is-live mb-2'>
+            <span
+              className='inline-block h-1.5 w-1.5 rounded-full bg-current'
+              style={{ animation: 'skeleton-pulse 1.6s ease-in-out infinite' }}
+            />
+            Live index
+          </span>
+          <h1 className='text-3xl font-bold tracking-tight'>Market</h1>
+          <p className='mt-1 max-w-[70ch] text-sm text-muted-foreground'>
+            Bonding-curve launches on{' '}
+            <a
+              href='https://testnet.vibevibe.fun'
+              target='_blank'
+              rel='noreferrer noopener'
+              className='text-primary font-medium underline underline-offset-2 hover:underline'
+            >
+              Robinhood Chain Testnet
+            </a>
+            , synced from the vibes indexer in real time.
+          </p>
         </div>
+        {page && (
+          <div className='border-border bg-card flex items-center gap-2 rounded-lg border px-3 py-1.5'>
+            <span className='text-foreground num text-sm font-bold'>
+              {items.length}
+            </span>
+            <span className='text-muted-foreground text-xs'>
+              {page.hasMore ? 'launches loaded' : 'launches total'}
+            </span>
+          </div>
+        )}
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            type="search"
-            placeholder="Search token or symbol…"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            className="h-9 w-full flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring sm:w-auto sm:min-w-[14rem]"
-          />
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:w-auto sm:flex-1">
+            <svg
+              className="text-muted-foreground absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search token or symbol…"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              className="h-9 w-full rounded-md border border-input bg-background pr-3 pl-9 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring sm:min-w-[14rem]"
+            />
+          </div>
 
           <select
             value={sort}
@@ -151,7 +173,6 @@ export default function MarketPage() {
             {loading ? "Syncing…" : "Refresh"}
           </button>
         </div>
-      </div>
 
       {error && (
         <div className="mb-6 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-500">
@@ -227,10 +248,12 @@ function TokenCard({ launch }: { launch: VibesLaunch }) {
       </div>
 
       <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span className={grad ? "text-destructive" : ""}>
+        <span className={grad ? "text-destructive font-medium" : ""}>
           {grad ? "Graduated" : `${pct}%`}
         </span>
-        <span>{launch.holderCount ?? 0} holders</span>
+        <span className="tabular-nums">
+          {launch.holderCount ?? 0} holder{(launch.holderCount ?? 0) === 1 ? "" : "s"}
+        </span>
       </div>
 
       <div className="flex items-center justify-between gap-2 border-t border-border pt-2 text-xs">

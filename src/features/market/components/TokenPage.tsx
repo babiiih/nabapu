@@ -6,7 +6,7 @@
  * can be bought and sold from this site.
  */
 import { useEffect, useState } from "react";
-import { useAccount, useBalance, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useBalance, useConnect, useReadContract, useWriteContract } from "wagmi";
 import { parseAbi, parseEther, formatEther } from "viem";
 import { getLaunch, type VibesLaunch } from "@/lib/vibes";
 import { Link } from "@tanstack/react-router";
@@ -94,24 +94,22 @@ export default function TokenPage({ address }: { address: string }) {
       <div className="grid gap-8 lg:grid-cols-[auto_1fr]">
         <div className="flex flex-col items-start gap-4">
           <div
-            className="relative overflow-hidden border border-border bg-card"
+            className="relative overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             style={{ width: 160, height: 160 }}
           >
             <TokenImage uri={launch.content.image?.uri} alt={launch.name} className="!static" />
           </div>
           <div className="flex flex-wrap gap-2">
-            <a href={`${CHAIN.explorer}/address/${launch.tokenAddress}`} target="_blank" rel="noreferrer noopener">
-              <Button variant="outline" size="sm">
-                Explorer
-              </Button>
-            </a>
             <a
               href={`https://testnet.vibevibe.fun/token/${launch.tokenAddress}`}
               target="_blank"
               rel="noreferrer noopener"
             >
+              <Button size="sm">Trade on vibes ↗</Button>
+            </a>
+            <a href={`${CHAIN.explorer}/address/${launch.tokenAddress}`} target="_blank" rel="noreferrer noopener">
               <Button variant="outline" size="sm">
-                On vibes
+                Explorer
               </Button>
             </a>
           </div>
@@ -131,7 +129,7 @@ export default function TokenPage({ address }: { address: string }) {
           </p>
 
           <dl className="mt-6 grid gap-px overflow-hidden border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-            <Stat label="Last price" value={`${fmtEth(launch.analytics.lastPriceWeiPerToken, 9)} ETH`} />
+            <Stat label="Last price" value={`${fmtEth(launch.analytics.lastPriceWeiPerToken, 9)} ETH`} accent />
             <Stat label="24h volume" value={`${fmtEth(launch.analytics.volume24hWei)} ETH`} />
             <Stat label="Holders" value={String(launch.holderCount ?? 0)} />
             <Stat
@@ -190,17 +188,23 @@ function Stat({
   label,
   value,
   mono,
+  accent,
 }: {
   label: string;
   value: string;
   mono?: boolean;
+  accent?: boolean;
 }) {
   return (
-    <div className="bg-card p-3">
+    <div className={`${accent ? "bg-primary/10" : "bg-card"} p-3`}>
       <dt className="text-[0.6875rem] uppercase tracking-wide text-muted-foreground">
         {label}
       </dt>
-      <dd className={`mt-1 text-sm font-medium ${mono ? "mono" : ""}`}>{value}</dd>
+      <dd
+        className={`num mt-1 text-sm ${accent ? "text-primary text-lg font-bold" : "font-medium"} ${mono ? "mono" : ""}`}
+      >
+        {value}
+      </dd>
     </div>
   );
 }
@@ -263,6 +267,7 @@ function AboutBox({ launch }: { launch: VibesLaunch }) {
 
 function TradeBox({ launch }: { launch: VibesLaunch }) {
   const { address, isConnected } = useAccount();
+  const { connectors, connect } = useConnect();
   const { writeContractAsync, isPending } = useWriteContract();
   const pair = launch.curveAddress as `0x${string}`;
   const token = launch.tokenAddress as `0x${string}`;
@@ -363,20 +368,27 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-muted-foreground">
           Trade ${launch.symbol}
         </h2>
-        <p className="text-sm text-muted-foreground">
-          Connect your wallet to buy or sell ${launch.symbol} through the
-          bonding curve.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-3 text-xs">
-          {out !== undefined && out > 0n && (
-            <span className="rounded-md border border-border bg-muted p-2">
-              ≈ {fmtTokens(out)} ${launch.symbol} for {amount || "0"} ETH
-            </span>
-          )}
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => connect({ connector: connectors[0] })} disabled={!connectors.length}>
+            Connect wallet
+          </Button>
+          <a
+            href={`https://testnet.vibevibe.fun/token/${launch.tokenAddress}`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <Button variant="outline" size="sm">
+              Trade on vibes ↗
+            </Button>
+          </a>
         </div>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Buy or sell ${launch.symbol} directly through the bonding curve —
+          quotes update live, no page refresh.
+        </p>
         <p className="mt-3 text-[0.6875rem] text-muted-foreground">
-          Quotes are live; executing a trade needs a connected wallet on
-          Robinhood Chain Testnet (46630).
+          Executing a trade needs a connected wallet on Robinhood Chain Testnet
+          (46630).
         </p>
       </div>
     );
