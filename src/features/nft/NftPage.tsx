@@ -17,6 +17,7 @@ import { parseAbi } from "viem";
 import { NFT_COLLECTION, CHAIN } from "@/contracts";
 import { Button } from "@/components/ui/button";
 import { shortAddr } from "@/lib/format";
+import PrivyConnectButton from "@/features/privy/PrivyConnectButton";
 
 const NFT_ABI = parseAbi([
   "function mint()",
@@ -173,6 +174,7 @@ export default function NftPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
+            <PrivyConnectButton />
             {!isConnected ? (
               <Button
                 onClick={() => connect({ connector: connectors[0] })}

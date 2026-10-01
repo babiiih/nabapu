@@ -14,6 +14,7 @@ import CandlestickChart from "./CandlestickChart";
 import TradeLog from "./TradeLog";
 import { fmtEth, fmtUsd, fmtTokens, shortAddr, timeAgo, toWei } from "@/lib/format";
 import TokenImage from "./TokenImage";
+import PrivyConnectButton from "@/features/privy/PrivyConnectButton";
 import { Button } from "@/components/ui/button";
 import { CHAIN } from "@/contracts";
 
@@ -409,6 +410,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
           <Button size="sm" onClick={() => connect({ connector: connectors[0] })} disabled={!connectors.length}>
             Connect wallet
           </Button>
+          <PrivyConnectButton />
           <a
             href={`https://testnet.vibevibe.fun/token/${launch.tokenAddress}`}
             target="_blank"

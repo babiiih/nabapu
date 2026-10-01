@@ -8,6 +8,7 @@ import {
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { WagmiProvider } from 'wagmi'
 import { wagmiConfig as wagmiConfig } from '@/wagmi'
+import AppPrivyProvider from '@/lib/privy'
 import { DirectionProvider } from './context/direction-provider'
 import { FontProvider } from './context/font-provider'
 import { ThemeProvider } from './context/theme-provider'
@@ -48,17 +49,19 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <FontProvider>
-              <DirectionProvider>
-                <RouterProvider router={router} />
-              </DirectionProvider>
-            </FontProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+      <AppPrivyProvider>
+        <WagmiProvider config={wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+              <FontProvider>
+                <DirectionProvider>
+                  <RouterProvider router={router} />
+                </DirectionProvider>
+              </FontProvider>
+            </ThemeProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </AppPrivyProvider>
     </StrictMode>
   )
 }
