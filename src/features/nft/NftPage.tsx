@@ -101,6 +101,8 @@ export default function NftPage() {
         address: NFT_COLLECTION,
         abi: NFT_ABI,
         functionName: "mint",
+        // kunci ke Robinhood Chain Testnet — wallet auto-switch kalau di chain lain
+        chainId: CHAIN.id,
       });
       setOk(hash);
       // refresh supply + balance setelah konfirmasi

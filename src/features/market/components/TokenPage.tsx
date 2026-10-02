@@ -371,6 +371,10 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
           functionName: "buy",
           args: [(q * (10000n - bps)) / 10000n, deadline],
           value: amt,
+          // WALWAJIB: kunci ke Robinhood Chain Testnet — wallet user otomatis
+          // di-switch (wallet_switchEthereumChain / addEthereumChain) kalau
+          // lagi di chain lain. Tanpa ini wagmi v3 pakai chain wallet saat ini.
+          chainId: CHAIN.id,
         });
         setOk(hash);
         setAmount("");
@@ -383,6 +387,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
             abi: ERC20,
             functionName: "approve",
             args: [pair, amt],
+            chainId: CHAIN.id,
           });
           await waitForTx(CHAIN.rpcRead, String(appr));
         }
@@ -391,6 +396,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
           abi: PAIR_ABI,
           functionName: "sell",
           args: [amt, (q * (10000n - bps)) / 10000n, deadline],
+          chainId: CHAIN.id,
         });
         setOk(hash);
         setAmount("");
