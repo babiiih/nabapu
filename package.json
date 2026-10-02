@@ -66,6 +66,8 @@
     "@reown/appkit-ui": "^1.8.9",
     "@reown/appkit-utils": "^1.8.9",
     "@reown/appkit-wallet": "^1.8.9",
+    "@stripe/crypto": "^0.0.0-prerelease.31",
+    "@stripe/stripe-js": "^7.0.0",
     "@swc/helpers": "^0.5.23",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.99.0",
