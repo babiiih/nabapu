@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { ipfsUrl } from "@/lib/vibes";
+import { useState } from 'react'
 
 interface Props {
   uri?: string | null;
@@ -8,12 +7,36 @@ interface Props {
 }
 
 /**
- * Token artwork. Falls back to a generated monogram when the launch has no
- * IPFS image (some launches skip it).
+ * Token artwork — tries multiple IPFS gateways in order, then falls back to
+ * a generated monogram. Pinata alone was a single point of failure.
  */
+const GATEWAYS = [
+  (cid: string) => `https://gateway.pinata.cloud/ipfs/${cid}`,
+  (cid: string) => `https://ipfs.io/ipfs/${cid}`,
+  (cid: string) => `https://cloudflare-ipfs.com/ipfs/${cid}`,
+]
+
+function toCid(uri?: string | null): string | undefined {
+  if (!uri) return undefined
+  const raw = String(uri).trim()
+  if (raw.startsWith('http')) return undefined // direct URL, use as-is
+  if (raw.startsWith('ipfs://')) return raw.slice('ipfs://'.length)
+  if (/^(bafy|bafk|Qm)/.test(raw)) return raw
+  return undefined
+}
+
 export default function TokenImage({ uri, alt, className }: Props) {
-  const src = ipfsUrl(uri);
-  const [fallback, setFallback] = useState(false);
+  const direct = uri && String(uri).trim().startsWith('http') ? String(uri).trim() : undefined
+  const cid = toCid(uri)
+  const [gw, setGw] = useState(0)
+  const [fallback, setFallback] = useState(false)
+
+  const src = direct ?? (cid ? GATEWAYS[Math.min(gw, GATEWAYS.length - 1)](cid) : undefined)
+
+  const onError = () => {
+    if (!direct && cid && gw < GATEWAYS.length - 1) setGw((g) => g + 1)
+    else setFallback(true)
+  }
 
   if (!src || fallback) {
     // Skill: semantic tokens + gradient monogram instead of flat grey block
@@ -35,7 +58,7 @@ export default function TokenImage({ uri, alt, className }: Props) {
       alt={alt}
       className={className}
       loading="lazy"
-      onError={() => setFallback(true)}
+      onError={onError}
     />
   );
 }

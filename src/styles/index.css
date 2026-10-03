@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import './theme.css';
+@import './gold-theme.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -110,13 +111,8 @@
     box-shadow 0.15s ease;
   cursor: pointer;
 }
-.token-card:hover {
-  border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
-  transform: translateY(-2px);
-  box-shadow:
-    0 1px 2px oklch(0 0 0 / 0.04),
-    0 12px 24px -12px color-mix(in oklch, var(--primary) 35%, transparent);
-}
+/* NOTE: .token-card:hover, .curve-track>span, .chip.is-live, .hero-panel
+   live in gold-theme.css (single source) — removed here to avoid conflicts. */
 .token-card .thumb {
   position: relative;
   aspect-ratio: 1 / 1;
@@ -145,11 +141,7 @@
   border-radius: 2px;
   overflow: hidden;
 }
-.curve-track > span {
-  display: block;
-  height: 100%;
-  background: var(--primary);
-}
+/* (in gold-theme.css) */
 .curve-track.is-graduated > span {
   background: var(--chart-1);
 }
@@ -168,11 +160,7 @@
   color: var(--muted-foreground);
   background: color-mix(in oklch, var(--muted) 60%, transparent);
 }
-.chip.is-live {
-  color: var(--primary);
-  border-color: color-mix(in oklch, var(--primary) 45%, transparent);
-  background: color-mix(in oklch, var(--primary) 10%, transparent);
-}
+/* (in gold-theme.css) */
 .chip.is-dev {
   color: var(--chart-1);
   background: color-mix(in oklch, var(--chart-1) 14%, transparent);
@@ -292,30 +280,13 @@
   }
 }
 
-/* *=========== Dashboard hero =========== */
+/* *=========== Dashboard hero — base only (effects in gold-theme.css) =========== */
 .hero-panel {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background:
-    radial-gradient(
-      120% 140% at 8% -20%,
-      color-mix(in oklch, var(--primary) 16%, transparent) 0%,
-      transparent 55%
-    ),
-    var(--card);
-}
-.hero-panel::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    115deg,
-    transparent 62%,
-    color-mix(in oklch, var(--primary) 7%, transparent) 100%
-  );
+  background: var(--card);
 }
 
 /* stat card: tinted icon chip, no more floating grey glyph */
