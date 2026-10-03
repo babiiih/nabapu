@@ -175,4 +175,139 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-panel::before, .hero-panel::after, .hero-panel h2 { animation: none; }
   .token-card:hover { transform: none; }
+  div[class*='grid'] > .card, .token-card { animation: none; }
+}
+
+/* ============================================================
+   ROUND 2 — sidebar, page titles, tables, inputs, motion
+   ============================================================ */
+
+/* --- Sidebar: active item emas solid + glow --- */
+[data-slot='sidebar-menu-button'][data-active='true'] {
+  background: linear-gradient(135deg, oklch(0.72 0.15 82), oklch(0.6 0.14 78));
+  color: #fffdf4;
+  font-weight: 600;
+  box-shadow: 0 6px 18px -6px color-mix(in oklch, var(--primary) 70%, transparent);
+}
+.dark [data-slot='sidebar-menu-button'][data-active='true'] { color: #1a1405; }
+[data-slot='sidebar-menu-button']:not([data-active='true']) {
+  transition: transform 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+[data-slot='sidebar-menu-button']:not([data-active='true']):hover {
+  transform: translateX(3px);
+  background: color-mix(in oklch, var(--primary) 10%, transparent);
+  color: var(--foreground);
+}
+[data-slot='sidebar-menu-button'][data-active='true'] svg {
+  filter: drop-shadow(0 0 6px rgb(255 255 255 / 0.5));
+}
+
+/* Sidebar brand area: gold divider line */
+[data-slot='sidebar-header'] {
+  border-bottom: 1px solid color-mix(in oklch, var(--primary) 25%, transparent);
+}
+
+/* --- Page titles: gold gradient (Market/Trending/Trenches/Wallet/Token) --- */
+main h1.text-3xl {
+  background: linear-gradient(100deg, var(--foreground) 35%, var(--primary) 60%, color-mix(in oklch, var(--primary) 55%, #fff3c4) 75%, var(--foreground) 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  padding-bottom: 0.1em;
+}
+
+/* --- Stat cards: fade-up reveal berurutan + gold top-border --- */
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+div[class*='grid'] > .card, .token-card {
+  animation: card-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+div[class*='grid'] > .card:nth-child(2), .market-grid > :nth-child(2) { animation-delay: 0.06s; }
+div[class*='grid'] > .card:nth-child(3), .market-grid > :nth-child(3) { animation-delay: 0.12s; }
+div[class*='grid'] > .card:nth-child(4), .market-grid > :nth-child(4) { animation-delay: 0.18s; }
+.market-grid > :nth-child(n+5) { animation-delay: 0.22s; }
+div[class*='grid'] > .card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0.7;
+}
+
+/* --- Tables: gold header + row hover --- */
+table thead th {
+  color: color-mix(in oklch, var(--primary) 75%, var(--foreground) 25%);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid color-mix(in oklch, var(--primary) 35%, var(--border) 65%);
+}
+table tbody tr {
+  transition: background-color 0.15s ease;
+}
+table tbody tr:hover {
+  background: color-mix(in oklch, var(--primary) 7%, transparent);
+}
+
+/* --- Inputs/search: gold focus ring --- */
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 25%, transparent);
+}
+
+/* --- Skeleton: gold shimmer (ganti pulse abu) --- */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  animation: none;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, color-mix(in oklch, var(--primary) 22%, transparent) 50%, transparent 70%);
+  animation: gold-skeleton 1.8s ease-in-out infinite;
+}
+@keyframes gold-skeleton {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+/* --- Scrollbar: emas tipis --- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--primary) 45%, var(--border) 55%);
+  border-radius: 8px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklch, var(--primary) 70%, var(--border) 30%);
+}
+
+/* --- Connect/wallet buttons: gold gradient --- */
+button[class*='privy'], [data-testid*='connect' i] {
+  background: linear-gradient(135deg, oklch(0.72 0.15 82), oklch(0.6 0.14 78));
+  color: #fffdf4;
+  border: 1px solid color-mix(in oklch, var(--primary) 70%, #000 10%);
+  box-shadow: 0 6px 20px -6px color-mix(in oklch, var(--primary) 65%, transparent);
+}
+button[class*='privy']:hover, [data-testid*='connect' i]:hover {
+  filter: brightness(1.06);
+}
+
+/* --- Links in body copy: gold underline animasi --- */
+main p a, main td a {
+  text-decoration-color: color-mix(in oklch, var(--primary) 60%, transparent);
+  text-underline-offset: 3px;
+}
+main p a:hover, main td a:hover {
+  text-decoration-color: var(--primary);
 }
