@@ -39,14 +39,21 @@ const RARITY_CLASS: Record<Rarity, string> = {
   Legendary: "text-amber-500 border-amber-500/50",
 };
 
-/** Ambil injected provider dan pastikan ada di chain 46630 (Robinhood Testnet). */
+/**
+ * Ambil injected provider, pastikan chain 46630, dan return AKTIF address.
+ * MetaMask menolak `from` yang beda dari account aktifnya.
+ */
 async function getWalletProvider(): Promise<{
   request: (args: { method: string; params?: unknown[] }) => Promise<string>;
+  address: string;
 }> {
   const eth = (window as unknown as {
     ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<string> };
   }).ethereum;
   if (!eth) throw new Error("no wallet found — install MetaMask");
+  const accounts = (await eth.request({ method: "eth_accounts" })) as unknown as string[];
+  const active = accounts?.[0];
+  if (!active) throw new Error("wallet not connected");
   const cur = Number(await eth.request({ method: "eth_chainId" }));
   if (cur !== CHAIN.id) {
     try {
@@ -83,7 +90,7 @@ async function getWalletProvider(): Promise<{
       }
     }
   }
-  return eth;
+  return { request: eth.request.bind(eth), address: active };
 }
 
 export default function NftPage() {
@@ -149,7 +156,7 @@ export default function NftPage() {
       const data = encodeFunctionData({ abi: NFT_ABI, functionName: "mint" });
       const hash = await provider.request({
         method: "eth_sendTransaction",
-        params: [{ from: address, to: NFT_COLLECTION, data }],
+        params: [{ from: provider.address, to: NFT_COLLECTION, data }],
       });
       setOk(hash);
       // refresh supply + balance setelah konfirmasi

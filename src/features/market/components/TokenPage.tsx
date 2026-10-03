@@ -294,14 +294,26 @@ function AboutBox({ launch }: { launch: VibesLaunch }) {
   );
 }
 
-/** Ambil injected provider (window.ethereum) dan pastikan ada di chain 46630. */
+/**
+ * Ambil injected provider (window.ethereum), pastikan ada di chain 46630,
+ * dan return address yang AKTIF di wallet saat ini.
+ *
+ * Penting: address dari wagmi (useAccount) bisa beda sama account yang lagi
+ * dipilih di MetaMask (multi-account). MetaMask menolak eth_sendTransaction
+ * kalau `from` ≠ active account ("from should be same as current address").
+ */
 async function getWalletProvider(): Promise<{
   request: (args: { method: string; params?: unknown[] }) => Promise<string>;
+  address: string;
 }> {
   const eth = (window as unknown as {
     ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<string> } & Record<string, unknown>;
   }).ethereum;
   if (!eth) throw new Error("no wallet found — install MetaMask");
+  // Ambil account AKTIF di wallet (bukan dari state wagmi)
+  const accounts = (await eth.request({ method: "eth_accounts" })) as unknown as string[];
+  const active = accounts?.[0];
+  if (!active) throw new Error("wallet not connected");
   // Pastikan wallet di Robinhood Chain Testnet (46630). Kalau belum, switch /
   // tambahkan network dulu — wallet yang handle popup-nya.
   const cur = Number(await eth.request({ method: "eth_chainId" }));
@@ -341,7 +353,7 @@ async function getWalletProvider(): Promise<{
       }
     }
   }
-  return eth;
+  return { request: eth.request.bind(eth), address: active };
 }
 
 function TradeBox({ launch }: { launch: VibesLaunch }) {
@@ -428,7 +440,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
         });
         const hash = await provider.request({
           method: "eth_sendTransaction",
-          params: [{ from: address, to: pair, value: toHex(amt), data }],
+          params: [{ from: provider.address, to: pair, value: toHex(amt), data }],
         });
         setOk(hash);
         setAmount("");
@@ -443,7 +455,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
           });
           const appr = await provider.request({
             method: "eth_sendTransaction",
-            params: [{ from: address, to: token, data: apprData }],
+            params: [{ from: provider.address, to: token, data: apprData }],
           });
           await waitForTx(CHAIN.rpcRead, String(appr));
         }
@@ -454,7 +466,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
         });
         const hash = await provider.request({
           method: "eth_sendTransaction",
-          params: [{ from: address, to: pair, data }],
+          params: [{ from: provider.address, to: pair, data }],
         });
         setOk(hash);
         setAmount("");
