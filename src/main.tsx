@@ -16,7 +16,6 @@ import { ThemeProvider } from './context/theme-provider'
 import { routeTree } from './routeTree.gen'
 // Styles
 import './styles/index.css'
-import './styles/nabapu-ui/nabapu-ui.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
