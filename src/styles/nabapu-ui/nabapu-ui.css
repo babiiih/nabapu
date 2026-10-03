@@ -1,0 +1,31 @@
+/* Nabapu Market Terminal UI — ported from nabapu-ui template (vanilla SPA).
+ * All 22 template stylesheets are namespaced under .nb-app so they don't
+ * collide with the existing shadcn/tailwind theme used outside this shell.
+ */
+@import './styles.css';
+@import './premium.css';
+@import './complete.css';
+@import './profile.css';
+@import './anti-slop.css';
+@import './gmgn-inspired.css';
+@import './interactive-3d.css';
+@import './monochrome-gold.css';
+@import './final-redesign.css';
+@import './menus.css';
+@import './market-trade-fixes.css';
+@import './complex-dashboard.css';
+@import './polish.css';
+@import './canvas-3d.css';
+@import './chart-motion.css';
+@import './visual-impact.css';
+@import './strict-palette.css';
+@import './white-dominant.css';
+@import './hover-enhancements.css';
+@import './luxury-finish.css';
+@import './premium-motion.css';
+@import './responsive-final.css';
+
+/* Asset path rewrite: template used relative assets/asset_N.jpg.
+ * Copied to /images/nabapu-ui/ for the React build.
+ */
+.nb-app [src^='assets/'] { /* placeholder — React sets full paths */ }

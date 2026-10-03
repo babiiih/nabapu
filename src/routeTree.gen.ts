@@ -10,7 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as NbRouteRouteImport } from './routes/nb/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as NbIndexRouteImport } from './routes/nb/index'
+import { Route as NbDashboardRouteImport } from './routes/nb/dashboard'
+import { Route as NbMarketRouteImport } from './routes/nb/market'
+import { Route as NbNftRouteImport } from './routes/nb/nft'
+import { Route as NbProfileRouteImport } from './routes/nb/profile'
+import { Route as NbTrenchesRouteImport } from './routes/nb/trenches'
+import { Route as NbTrendingRouteImport } from './routes/nb/trending'
+import { Route as NbWalletRouteImport } from './routes/nb/wallet'
 import { Route as AuthenticatedMarketIndexRouteImport } from './routes/_authenticated/market/index'
 import { Route as AuthenticatedNftIndexRouteImport } from './routes/_authenticated/nft/index'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
@@ -23,10 +32,55 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NbRouteRoute = NbRouteRouteImport.update({
+  id: '/nb',
+  path: '/nb',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const NbIndexRoute = NbIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NbRouteRoute,
+} as any)
+const NbDashboardRoute = NbDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => NbRouteRoute,
+} as any)
+const NbMarketRoute = NbMarketRouteImport.update({
+  id: '/market',
+  path: '/market',
+  getParentRoute: () => NbRouteRoute,
+} as any)
+const NbNftRoute = NbNftRouteImport.update({
+  id: '/nft',
+  path: '/nft',
+  getParentRoute: () => NbRouteRoute,
+} as any)
+const NbProfileRoute = NbProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => NbRouteRoute,
+} as any)
+const NbTrenchesRoute = NbTrenchesRouteImport.update({
+  id: '/trenches',
+  path: '/trenches',
+  getParentRoute: () => NbRouteRoute,
+} as any)
+const NbTrendingRoute = NbTrendingRouteImport.update({
+  id: '/trending',
+  path: '/trending',
+  getParentRoute: () => NbRouteRoute,
+} as any)
+const NbWalletRoute = NbWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => NbRouteRoute,
 } as any)
 const AuthenticatedMarketIndexRoute =
   AuthenticatedMarketIndexRouteImport.update({
@@ -72,6 +126,15 @@ const AuthenticatedWalletIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
+  '/nb': typeof NbRouteRouteWithChildren
+  '/nb/dashboard': typeof NbDashboardRoute
+  '/nb/market': typeof NbMarketRoute
+  '/nb/nft': typeof NbNftRoute
+  '/nb/profile': typeof NbProfileRoute
+  '/nb/trenches': typeof NbTrenchesRoute
+  '/nb/trending': typeof NbTrendingRoute
+  '/nb/wallet': typeof NbWalletRoute
+  '/nb/': typeof NbIndexRoute
   '/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/market/': typeof AuthenticatedMarketIndexRoute
   '/nft/': typeof AuthenticatedNftIndexRoute
@@ -81,7 +144,15 @@ export interface FileRoutesByFullPath {
   '/wallet/': typeof AuthenticatedWalletIndexRoute
 }
 export interface FileRoutesByTo {
+  '/nb/dashboard': typeof NbDashboardRoute
+  '/nb/market': typeof NbMarketRoute
+  '/nb/nft': typeof NbNftRoute
+  '/nb/profile': typeof NbProfileRoute
+  '/nb/trenches': typeof NbTrenchesRoute
+  '/nb/trending': typeof NbTrendingRoute
+  '/nb/wallet': typeof NbWalletRoute
   '/': typeof AuthenticatedIndexRoute
+  '/nb': typeof NbIndexRoute
   '/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/market': typeof AuthenticatedMarketIndexRoute
   '/nft': typeof AuthenticatedNftIndexRoute
@@ -93,7 +164,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/nb': typeof NbRouteRouteWithChildren
+  '/nb/dashboard': typeof NbDashboardRoute
+  '/nb/market': typeof NbMarketRoute
+  '/nb/nft': typeof NbNftRoute
+  '/nb/profile': typeof NbProfileRoute
+  '/nb/trenches': typeof NbTrenchesRoute
+  '/nb/trending': typeof NbTrendingRoute
+  '/nb/wallet': typeof NbWalletRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/nb/': typeof NbIndexRoute
   '/_authenticated/token/$tokenAddress': typeof AuthenticatedTokenTokenAddressRoute
   '/_authenticated/market/': typeof AuthenticatedMarketIndexRoute
   '/_authenticated/nft/': typeof AuthenticatedNftIndexRoute
@@ -106,6 +186,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/nb'
+    | '/nb/dashboard'
+    | '/nb/market'
+    | '/nb/nft'
+    | '/nb/profile'
+    | '/nb/trenches'
+    | '/nb/trending'
+    | '/nb/wallet'
+    | '/nb/'
     | '/token/$tokenAddress'
     | '/market/'
     | '/nft/'
@@ -115,7 +204,15 @@ export interface FileRouteTypes {
     | '/wallet/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/nb/dashboard'
+    | '/nb/market'
+    | '/nb/nft'
+    | '/nb/profile'
+    | '/nb/trenches'
+    | '/nb/trending'
+    | '/nb/wallet'
     | '/'
+    | '/nb'
     | '/token/$tokenAddress'
     | '/market'
     | '/nft'
@@ -126,7 +223,16 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/nb'
+    | '/nb/dashboard'
+    | '/nb/market'
+    | '/nb/nft'
+    | '/nb/profile'
+    | '/nb/trenches'
+    | '/nb/trending'
+    | '/nb/wallet'
     | '/_authenticated/'
+    | '/nb/'
     | '/_authenticated/token/$tokenAddress'
     | '/_authenticated/market/'
     | '/_authenticated/nft/'
@@ -138,6 +244,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  NbRouteRoute: typeof NbRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -149,12 +256,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nb': {
+      id: '/nb'
+      path: '/nb'
+      fullPath: '/nb'
+      preLoaderRoute: typeof NbRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/': {
       id: '/_authenticated/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/nb/': {
+      id: '/nb/'
+      path: '/'
+      fullPath: '/nb/'
+      preLoaderRoute: typeof NbIndexRouteImport
+      parentRoute: typeof NbRouteRoute
+    }
+    '/nb/dashboard': {
+      id: '/nb/dashboard'
+      path: '/dashboard'
+      fullPath: '/nb/dashboard'
+      preLoaderRoute: typeof NbDashboardRouteImport
+      parentRoute: typeof NbRouteRoute
+    }
+    '/nb/market': {
+      id: '/nb/market'
+      path: '/market'
+      fullPath: '/nb/market'
+      preLoaderRoute: typeof NbMarketRouteImport
+      parentRoute: typeof NbRouteRoute
+    }
+    '/nb/nft': {
+      id: '/nb/nft'
+      path: '/nft'
+      fullPath: '/nb/nft'
+      preLoaderRoute: typeof NbNftRouteImport
+      parentRoute: typeof NbRouteRoute
+    }
+    '/nb/profile': {
+      id: '/nb/profile'
+      path: '/profile'
+      fullPath: '/nb/profile'
+      preLoaderRoute: typeof NbProfileRouteImport
+      parentRoute: typeof NbRouteRoute
+    }
+    '/nb/trenches': {
+      id: '/nb/trenches'
+      path: '/trenches'
+      fullPath: '/nb/trenches'
+      preLoaderRoute: typeof NbTrenchesRouteImport
+      parentRoute: typeof NbRouteRoute
+    }
+    '/nb/trending': {
+      id: '/nb/trending'
+      path: '/trending'
+      fullPath: '/nb/trending'
+      preLoaderRoute: typeof NbTrendingRouteImport
+      parentRoute: typeof NbRouteRoute
+    }
+    '/nb/wallet': {
+      id: '/nb/wallet'
+      path: '/wallet'
+      fullPath: '/nb/wallet'
+      preLoaderRoute: typeof NbWalletRouteImport
+      parentRoute: typeof NbRouteRoute
     }
     '/_authenticated/market/': {
       id: '/_authenticated/market/'
@@ -233,8 +403,34 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface NbRouteRouteChildren {
+  NbDashboardRoute: typeof NbDashboardRoute
+  NbMarketRoute: typeof NbMarketRoute
+  NbNftRoute: typeof NbNftRoute
+  NbProfileRoute: typeof NbProfileRoute
+  NbTrenchesRoute: typeof NbTrenchesRoute
+  NbTrendingRoute: typeof NbTrendingRoute
+  NbWalletRoute: typeof NbWalletRoute
+  NbIndexRoute: typeof NbIndexRoute
+}
+
+const NbRouteRouteChildren: NbRouteRouteChildren = {
+  NbDashboardRoute: NbDashboardRoute,
+  NbMarketRoute: NbMarketRoute,
+  NbNftRoute: NbNftRoute,
+  NbProfileRoute: NbProfileRoute,
+  NbTrenchesRoute: NbTrenchesRoute,
+  NbTrendingRoute: NbTrendingRoute,
+  NbWalletRoute: NbWalletRoute,
+  NbIndexRoute: NbIndexRoute,
+}
+
+const NbRouteRouteWithChildren =
+  NbRouteRoute._addFileChildren(NbRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  NbRouteRoute: NbRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
