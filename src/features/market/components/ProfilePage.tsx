@@ -134,6 +134,12 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {busy && holdings.length === 0 && activity.length === 0 && (
+        <div className="mb-6 rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
+          Loading your holdings… (scanning on-chain balances)
+        </div>
+      )}
+
       {!onRightChain && (
         <div className="mb-6 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-500">
           Wrong network — switch to Robinhood Chain Testnet (46630) in your wallet.
@@ -258,7 +264,7 @@ interface Holding {
   launch: VibesLaunch;
 }
 
-/** Scan the most recent launches and keep the ones with a non-zero balance. */
+/** Scan launches and keep the ones with a non-zero balance. */
 async function scanHoldings(wallet: string): Promise<Holding[]> {
   const out: Holding[] = [];
   let cursor: string | undefined;
@@ -267,7 +273,34 @@ async function scanHoldings(wallet: string): Promise<Holding[]> {
   while (scanned < 240) {
     const res = await listLaunches({ limit: 48, cursor });
     if (!res.items.length) break;
+
+    // Ambil semua balance secara PARALEL (batch 24 request sekaligus) —
+    // sebelumnya di-loop satu-satu yang bikin /profile loadnya lama banget.
+    const batch: VibesLaunch[] = [];
     for (const l of res.items) {
+      batch.push(l);
+      scanned++;
+      if (batch.length >= 24) {
+        const found = await scanBatch(wallet, batch);
+        out.push(...found);
+        batch.length = 0;
+      }
+    }
+    if (batch.length) {
+      const found = await scanBatch(wallet, batch);
+      out.push(...found);
+    }
+
+    cursor = res.page.nextCursor;
+    if (!res.page.hasMore) break;
+  }
+
+  return out;
+}
+
+async function scanBatch(wallet: string, launches: VibesLaunch[]): Promise<Holding[]> {
+  const results = await Promise.all(
+    launches.map(async (l) => {
       try {
         const data: string = await fetch(CHAIN.rpcRead, {
           method: "POST",
@@ -279,8 +312,7 @@ async function scanHoldings(wallet: string): Promise<Holding[]> {
             params: [
               {
                 to: l.tokenAddress,
-                data:
-                  "0x70a08231" + wallet.slice(2).padStart(64, "0"),
+                data: "0x70a08231" + wallet.slice(2).padStart(64, "0"),
               },
               "latest",
             ],
@@ -288,18 +320,15 @@ async function scanHoldings(wallet: string): Promise<Holding[]> {
         })
           .then((r) => r.json())
           .then((j) => (j.result ? String(j.result) : "0x0"));
-        if (BigInt(data) > 0n)
-          out.push({ token: l.tokenAddress, balance: data, launch: l });
+        return BigInt(data) > 0n
+          ? { token: l.tokenAddress, balance: data, launch: l }
+          : null;
       } catch {
-        // skip this token
+        return null;
       }
-      scanned++;
-    }
-    cursor = res.page.nextCursor;
-    if (!res.page.hasMore) break;
-  }
-
-  return out;
+    }),
+  );
+  return results.filter((x): x is Holding => x !== null);
 }
 
 function HoldingRow({ holding }: { holding: Holding }) {
