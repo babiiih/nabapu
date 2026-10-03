@@ -6,8 +6,8 @@
  * can be bought and sold from this site.
  */
 import { useEffect, useState } from "react";
-import { useAccount, useBalance, useChainId, useConnect, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
-import { parseAbi, parseEther, formatEther } from "viem";
+import { useAccount, useBalance, useConnect, useReadContract } from "wagmi";
+import { encodeFunctionData, parseAbi, parseEther, formatEther, toHex } from "viem";
 import { getLaunch, quoteUsdRates, type VibesLaunch } from "@/lib/vibes";
 import { Link } from "@tanstack/react-router";
 import CandlestickChart from "./CandlestickChart";
@@ -294,12 +294,51 @@ function AboutBox({ launch }: { launch: VibesLaunch }) {
   );
 }
 
+/** Ambil injected provider (window.ethereum) dan pastikan ada di chain 46630. */
+async function getWalletProvider(): Promise<{
+  request: (args: { method: string; params?: unknown[] }) => Promise<string>;
+}> {
+  const eth = (window as unknown as {
+    ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<string> } & Record<string, unknown>;
+  }).ethereum;
+  if (!eth) throw new Error("no wallet found — install MetaMask");
+  // Pastikan wallet di Robinhood Chain Testnet (46630). Kalau belum, switch /
+  // tambahkan network dulu — wallet yang handle popup-nya.
+  const cur = Number(await eth.request({ method: "eth_chainId" }));
+  if (cur !== CHAIN.id) {
+    try {
+      await eth.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: toHex(CHAIN.id) }],
+      });
+    } catch (e) {
+      const err = e as { code?: number };
+      // 4902 = chain belum ditambahkan di wallet
+      if (err.code === 4902) {
+        await eth.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: toHex(CHAIN.id),
+              chainName: "Robinhood Chain Testnet",
+              nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+              rpcUrls: ["https://robinhood-testnet-rpc.publicnode.com"],
+              blockExplorerUrls: [CHAIN.explorer],
+            },
+          ],
+        });
+      } else {
+        throw e;
+      }
+    }
+  }
+  return eth;
+}
+
 function TradeBox({ launch }: { launch: VibesLaunch }) {
   const { address, isConnected } = useAccount();
   const { connectors, connect } = useConnect();
-  const { writeContractAsync, isPending } = useWriteContract();
-  const activeChainId = useChainId();
-  const { switchChainAsync } = useSwitchChain();
+  const isPending = false;
   const pair = launch.curveAddress as `0x${string}`;
   const token = launch.tokenAddress as `0x${string}`;
 
@@ -362,26 +401,25 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
     setOk(null);
     try {
       if (amt <= 0n) throw new Error("enter an amount > 0");
-      // wagmi v3 transport connector menolak request kalau wallet lagi di chain
-      // lain (ChainDisconnectedError). Switch dulu, baru kirim tx.
-      if (activeChainId !== CHAIN.id) {
-        await switchChainAsync({ chainId: CHAIN.id });
-      }
+      // wagmi v3 "unstable_connector" transport menolak request kalau wallet
+      // ada di chain lain (ChainDisconnectedError), dan switchChainAsync belum
+      // tentu update state connector sebelum writeContractAsync jalan. Jadi
+      // kirim tx langsung lewat injected provider (window.ethereum) — wallet
+      // sendiri yang handle chain-nya, gak ada cek transport.
+      const provider = await getWalletProvider();
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
       const bps = BigInt(slip * 100);
 
       if (mode === "buy") {
         const q = (quoteBuy.data as bigint) ?? 0n;
-        const hash = await writeContractAsync({
-          address: pair,
+        const data = encodeFunctionData({
           abi: PAIR_ABI,
-          functionName: "buy",
           args: [(q * (10000n - bps)) / 10000n, deadline],
-          value: amt,
-          // WALWAJIB: kunci ke Robinhood Chain Testnet — wallet user otomatis
-          // di-switch (wallet_switchEthereumChain / addEthereumChain) kalau
-          // lagi di chain lain. Tanpa ini wagmi v3 pakai chain wallet saat ini.
-          chainId: CHAIN.id,
+          functionName: "buy",
+        });
+        const hash = await provider.request({
+          method: "eth_sendTransaction",
+          params: [{ from: address, to: pair, value: toHex(amt), data }],
         });
         setOk(hash);
         setAmount("");
@@ -389,21 +427,25 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
         const q = (quoteSell.data as bigint) ?? 0n;
         const allowed = await readAllowance(token, address!, pair);
         if (allowed < amt) {
-          const appr = await writeContractAsync({
-            address: token,
+          const apprData = encodeFunctionData({
             abi: ERC20,
-            functionName: "approve",
             args: [pair, amt],
-            chainId: CHAIN.id,
+            functionName: "approve",
+          });
+          const appr = await provider.request({
+            method: "eth_sendTransaction",
+            params: [{ from: address, to: token, data: apprData }],
           });
           await waitForTx(CHAIN.rpcRead, String(appr));
         }
-        const hash = await writeContractAsync({
-          address: pair,
+        const data = encodeFunctionData({
           abi: PAIR_ABI,
-          functionName: "sell",
           args: [amt, (q * (10000n - bps)) / 10000n, deadline],
-          chainId: CHAIN.id,
+          functionName: "sell",
+        });
+        const hash = await provider.request({
+          method: "eth_sendTransaction",
+          params: [{ from: address, to: pair, data }],
         });
         setOk(hash);
         setAmount("");
@@ -420,7 +462,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
           Trade ${launch.symbol}
         </h2>
         <div className="flex gap-2">
-          <Button size="sm" onClick={() => connect({ connector: connectors[0] })} disabled={!connectors.length}>
+          <Button size="sm" onClick={() => connect({ connector: connectors[0], chainId: CHAIN.id })} disabled={!connectors.length}>
             Connect wallet
           </Button>
           <PrivyConnectButton />

@@ -9,13 +9,10 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
-  useChainId,
   useConnect,
   useReadContract,
-  useSwitchChain,
-  useWriteContract,
 } from "wagmi";
-import { parseAbi } from "viem";
+import { encodeFunctionData, parseAbi, toHex } from "viem";
 import { NFT_COLLECTION, CHAIN } from "@/contracts";
 import { Button } from "@/components/ui/button";
 import { shortAddr } from "@/lib/format";
@@ -42,12 +39,48 @@ const RARITY_CLASS: Record<Rarity, string> = {
   Legendary: "text-amber-500 border-amber-500/50",
 };
 
+/** Ambil injected provider dan pastikan ada di chain 46630 (Robinhood Testnet). */
+async function getWalletProvider(): Promise<{
+  request: (args: { method: string; params?: unknown[] }) => Promise<string>;
+}> {
+  const eth = (window as unknown as {
+    ethereum?: { request: (a: { method: string; params?: unknown[] }) => Promise<string> };
+  }).ethereum;
+  if (!eth) throw new Error("no wallet found — install MetaMask");
+  const cur = Number(await eth.request({ method: "eth_chainId" }));
+  if (cur !== CHAIN.id) {
+    try {
+      await eth.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: toHex(CHAIN.id) }],
+      });
+    } catch (e) {
+      const err = e as { code?: number };
+      if (err.code === 4902) {
+        await eth.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: toHex(CHAIN.id),
+              chainName: "Robinhood Chain Testnet",
+              nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+              rpcUrls: ["https://robinhood-testnet-rpc.publicnode.com"],
+              blockExplorerUrls: [CHAIN.explorer],
+            },
+          ],
+        });
+      } else {
+        throw e;
+      }
+    }
+  }
+  return eth;
+}
+
 export default function NftPage() {
   const { address, isConnected } = useAccount();
   const { connectors, connect } = useConnect();
-  const { writeContractAsync, isPending } = useWriteContract();
-  const activeChainId = useChainId();
-  const { switchChainAsync } = useSwitchChain();
+  const isPending = false;
 
   const [manifest, setManifest] = useState<Entry[] | null>(null);
   const [filter, setFilter] = useState<Rarity | "All">("All");
@@ -101,16 +134,13 @@ export default function NftPage() {
     setErr(null);
     setOk(null);
     try {
-      // switch dulu kalau wallet di chain lain (wagmi v3 menolak request cross-chain)
-      if (activeChainId !== CHAIN.id) {
-        await switchChainAsync({ chainId: CHAIN.id });
-      }
-      const hash = await writeContractAsync({
-        address: NFT_COLLECTION,
-        abi: NFT_ABI,
-        functionName: "mint",
-        // kunci ke Robinhood Chain Testnet — wallet auto-switch kalau di chain lain
-        chainId: CHAIN.id,
+      // kirim langsung lewat injected provider — bypass wagmi connector transport
+      // (yang menolak kalau wallet ada di chain lain).
+      const provider = await getWalletProvider();
+      const data = encodeFunctionData({ abi: NFT_ABI, functionName: "mint" });
+      const hash = await provider.request({
+        method: "eth_sendTransaction",
+        params: [{ from: address, to: NFT_COLLECTION, data }],
       });
       setOk(hash);
       // refresh supply + balance setelah konfirmasi
@@ -187,7 +217,7 @@ export default function NftPage() {
             <PrivyConnectButton />
             {!isConnected ? (
               <Button
-                onClick={() => connect({ connector: connectors[0] })}
+                onClick={() => connect({ connector: connectors[0], chainId: CHAIN.id })}
                 disabled={!connectors.length}
               >
                 Connect wallet
