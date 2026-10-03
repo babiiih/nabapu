@@ -472,6 +472,7 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
         setAmount("");
       }
     } catch (e) {
+      console.error("[trade] submit failed:", e);
       setErr(humanErr(e));
     }
   };
