@@ -311,3 +311,98 @@ main p a, main td a {
 main p a:hover, main td a:hover {
   text-decoration-color: var(--primary);
 }
+
+/* ============================================================
+   ROUND 3 — sidebar brand/menus + charts
+   ============================================================ */
+
+/* --- Brand logo: gold gradient tile + glow --- */
+[data-slot='sidebar-header'] [class*='aspect-square'] {
+  background: linear-gradient(135deg, oklch(0.75 0.155 84), oklch(0.58 0.14 78)) !important;
+  color: #fffdf4 !important;
+  box-shadow: 0 4px 16px -4px color-mix(in oklch, var(--primary) 75%, transparent);
+  border: 1px solid color-mix(in oklch, var(--primary) 60%, #fff3c4 20%);
+}
+.dark [data-slot='sidebar-header'] [class*='aspect-square'] { color: #1a1405 !important; }
+[data-slot='sidebar-header'] .truncate.font-semibold {
+  background: linear-gradient(100deg, var(--foreground) 40%, var(--primary) 65%, var(--foreground) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --- Group label: gold eyebrow + rule --- */
+[data-slot='sidebar-group-label'] {
+  color: color-mix(in oklch, var(--primary) 80%, var(--foreground) 20%) !important;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+[data-slot='sidebar-group-label']::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in oklch, var(--primary) 45%, transparent), transparent);
+}
+
+/* --- Menu items: icon chip gold on active, glow hover --- */
+[data-slot='sidebar-menu-button'] svg {
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+[data-slot='sidebar-menu-button']:not([data-active='true']):hover svg {
+  transform: scale(1.12);
+  color: var(--primary);
+}
+[data-slot='sidebar-menu-button'][data-active='true'] {
+  position: relative;
+  overflow: hidden;
+}
+[data-slot='sidebar-menu-button'][data-active='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.35) 50%, transparent 60%);
+  transform: translateX(-120%);
+  animation: gold-shine 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* --- Sidebar footer (user/wallet): gold-bordered card --- */
+[data-slot='sidebar-footer'] [data-slot='sidebar-menu-button'] {
+  border: 1px solid color-mix(in oklch, var(--primary) 35%, var(--border) 65%);
+  background: color-mix(in oklch, var(--primary) 6%, var(--card) 94%);
+}
+[data-slot='sidebar-footer'] [data-slot='sidebar-menu-button']:hover {
+  transform: none;
+  border-color: color-mix(in oklch, var(--primary) 60%, var(--border) 40%);
+  box-shadow: 0 6px 20px -8px color-mix(in oklch, var(--primary) 60%, transparent);
+}
+
+/* --- TopNav (header tabs): gold underline indicator --- */
+nav a[data-active='true'], nav button[data-active='true'] {
+  color: var(--foreground);
+  position: relative;
+}
+nav a[data-active='true']::after, nav button[data-active='true']::after {
+  content: '';
+  position: absolute;
+  left: 0.5rem; right: 0.5rem; bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+
+/* --- Recharts (analytics): gold tooltip + grid --- */
+.recharts-cartesian-grid line {
+  stroke: color-mix(in oklch, var(--primary) 18%, var(--border) 82%);
+}
+.recharts-default-tooltip {
+  border: 1px solid color-mix(in oklch, var(--primary) 45%, var(--border) 55%) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 30px -10px color-mix(in oklch, var(--primary) 50%, transparent) !important;
+}
+.recharts-tooltip-label { color: var(--primary) !important; font-weight: 700; }

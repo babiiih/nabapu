@@ -68,10 +68,11 @@ export default function CandlestickChart({
   height?: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   const [candles, setCandles] = useState<VibesCandle[] | null>(null);
   const [source, setSource] = useState<string>("");
   const [interval, setIntervalSel] = useState<(typeof INTERVALS)[number]>("1h");
-  const [hover] = useState<string | null>(null);
+  const [hover, setHover] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -169,8 +170,16 @@ export default function CandlestickChart({
       const o = Number(c.o);
       const cl = Number(c.c);
       const up = cl >= o;
-      ctx.strokeStyle = up ? "#22c55e" : "#ef4444";
-      ctx.fillStyle = up ? "#22c55e" : "#ef4444";
+      const isHov = hover === i;
+      // gold bull / bronze bear — hover candle glows
+      ctx.strokeStyle = up ? "#d4a017" : "#8a5a1d";
+      ctx.fillStyle = up ? "#e3b93c" : "#a06a24";
+      if (isHov) {
+        ctx.shadowColor = up ? "rgba(227,185,60,.8)" : "rgba(160,106,36,.8)";
+        ctx.shadowBlur = 10;
+      } else {
+        ctx.shadowBlur = 0;
+      }
 
       // wick
       ctx.beginPath();
@@ -182,7 +191,47 @@ export default function CandlestickChart({
       const yO = y(o);
       const yC = y(cl);
       ctx.fillRect(cx - bw / 2, Math.min(yO, yC), bw, Math.max(1.5, Math.abs(yC - yO)));
+      ctx.shadowBlur = 0;
     });
+
+    // last-price dashed gold line
+    const lastC = Number(candles[n - 1].c);
+    const yLast = y(lastC);
+    ctx.save();
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = "rgba(212,160,23,.75)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, yLast);
+    ctx.lineTo(padL + plotW, yLast);
+    ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = "#d4a017";
+    ctx.font = "bold 10px ui-monospace, monospace";
+    ctx.fillText(fmtPriceLabel(lastC), padL + plotW + 6, yLast - 5);
+
+    // hover crosshair
+    if (hover !== null && hover >= 0 && hover < n) {
+      const c = candles[hover];
+      const cx = padL + slot * hover + slot / 2;
+      ctx.save();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = "rgba(212,160,23,.5)";
+      ctx.beginPath();
+      ctx.moveTo(cx, padT);
+      ctx.lineTo(cx, padT + plotH);
+      ctx.stroke();
+      ctx.restore();
+      // hover price tag
+      const hp = Number(c.c);
+      const hy = y(hp);
+      ctx.fillStyle = "rgba(212,160,23,.92)";
+      const lbl = fmtPriceLabel(hp);
+      const tw = ctx.measureText(lbl).width + 10;
+      ctx.fillRect(padL + plotW + 2, hy - 9, Math.max(tw, padR - 4), 16);
+      ctx.fillStyle = "#1a1405";
+      ctx.fillText(lbl, padL + plotW + 7, hy + 3);
+    }
 
     // last few time labels
     const labelEvery = Math.max(1, Math.ceil(n / 6));
@@ -219,10 +268,10 @@ export default function CandlestickChart({
             <button
               key={iv}
               onClick={() => setIntervalSel(iv)}
-              className={`rounded border border-border px-2 py-0.5 text-xs ${
+              className={`rounded border px-2 py-0.5 text-xs transition-colors ${
                 interval === iv
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "border-primary bg-primary text-primary-foreground shadow-[0_2px_12px_-2px_var(--primary)]"
+                  : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
               }`}
             >
               {iv}
@@ -233,11 +282,25 @@ export default function CandlestickChart({
       {candles === null ? (
         <div className="h-[260px] animate-pulse rounded-md border border-border bg-card" />
       ) : (
+        <div ref={wrapRef}>
         <canvas
           ref={canvasRef}
           style={{ width: "100%", height }}
-          className="rounded-md border border-border bg-card"
+          className="rounded-md border border-border bg-card cursor-crosshair"
+          onMouseMove={(e) => {
+            const cv = canvasRef.current;
+            if (!cv || !candles.length) return;
+            const rect = cv.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const padL = 8, padR = 56;
+            const plotW = rect.width - padL - padR;
+            const slot = plotW / candles.length;
+            const i = Math.floor((x - padL) / slot);
+            setHover(i >= 0 && i < candles.length ? i : null);
+          }}
+          onMouseLeave={() => setHover(null)}
         />
+        </div>
       )}
     </div>
   );
