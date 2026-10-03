@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { listLaunches, type VibesLaunch } from '@/lib/vibes';
 import { PageHeading, Subnav } from '../ui';
 import {
-  launchImg, launchPrice, launchChange, launchVol, launchCurve, launchHolders,
+  launchImg, launchPrice, launchChange, launchVol, launchCurve, launchHolders, launchAge,
 } from '../data';
 
 export function NbTrending() {
@@ -16,7 +16,7 @@ export function NbTrending() {
     let ok = true;
     (async () => {
       try {
-        const r = await listLaunches({ limit: 200 });
+        const r = await listLaunches({ limit: 100 });
         if (ok) setItems(r.items);
       } catch {
         /* offline */
@@ -43,9 +43,9 @@ export function NbTrending() {
         kicker="LIVE HEAT INDEX"
         title="Trending"
         desc="Ranked by 24h volume, holders, unique buyers and momentum. Auto-refreshes every 60 seconds."
-        right={<div className="sync">{items.length || 200} LAUNCHES SCORED</div>}
+        right={<div className="sync">{items.length ? `${items.length} LAUNCHES SCORED` : 'LOADING…'}</div>}
       />
-      <Subnav items={[['Heat map', String(items.length || 200)], ['Movers'], ['Volume'], ['Holder growth'], ['Smart flow']]} />
+      <Subnav items={[['Heat map', String(items.length)], ['Movers'], ['Volume'], ['Holder growth'], ['Smart flow']]} />
       <div className="signal-cards">
         <div><span>TOP SCORE</span><b>${topScore?.symbol ?? '—'}</b><small>Volume + momentum</small></div>
         <div>
@@ -58,7 +58,7 @@ export function NbTrending() {
           <b>${mostHeld?.symbol ?? '—'}</b>
           <small>{mostHeld ? `${launchHolders(mostHeld)} holders` : ''}</small>
         </div>
-        <div><span>BUY PRESSURE</span><b>71.4%</b><small>Market aggregate</small></div>
+        <div><span>TOTAL 24H VOL</span><b>{items.length ? launchVol(topScore!) : '—'}</b><small>Top-ranked launch</small></div>
       </div>
       <div className="toolbar">
         <div className="tabs">
@@ -113,7 +113,7 @@ export function NbTrending() {
                         </div>
                       </div>
                     </td>
-                    <td className="mono">3d</td>
+                    <td className="mono">{launchAge(l)}</td>
                   </tr>
                 ))}
           </tbody>

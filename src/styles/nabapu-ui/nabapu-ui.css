@@ -29,3 +29,164 @@
  * Copied to /images/nabapu-ui/ for the React build.
  */
 .nb-app [src^='assets/'] { /* placeholder — React sets full paths */ }
+
+/* ==== THEME LOCK — force the measured light-paper system of the template ====
+   Template measured: shell/body #f3f2ec, cards #fffefa, borders #c5c0b5/#d2cec4,
+   text #111310, muted #6a6e66, dark chrome sidebar #090b09 / topbar #111310,
+   buttons dark w/ gold text #d6b157, tape #ece8df. */
+.nb-app{background:#f3f2ec;color:#111310;color-scheme:light}
+.nb-app .shell{background-color:#f3f2ec;color:#111310}
+.nb-app .workspace main{background:#f6f4ee;color:#111310}
+.nb-app .hero,.nb-app .stat-card,.nb-app .token-card,.nb-app .signal-cards>div,
+.nb-app .intel-panel,.nb-app .side-panel,.nb-app .ops-panel,.nb-app .settings-panel,
+.nb-app .tracker,.nb-app .profile-card,.nb-app .nft-hero,.nb-app .feed-card,
+.nb-app .nft-card,.nb-app .market-card,.nb-app .table-wrap,.nb-app .wallet-empty,
+.nb-app .insight-strip{background-color:#fffefa;color:#111310}
+.nb-app .hero{border-color:#c5c0b5}
+.nb-app .stat-card,.nb-app .token-card,.nb-app .signal-cards>div,.nb-app .nft-card,
+.nb-app .feed-card,.nb-app .table-wrap,.nb-app .tracker,.nb-app .intel-panel,
+.nb-app .side-panel,.nb-app .profile-card{border-color:#d2cec4}
+.nb-app .hero h1,.nb-app .page-heading h1,.nb-app .section-head h2,.nb-app .stat-card strong,
+.nb-app .token-name b,.nb-app .profile-card h2,.nb-app .tracker h3,.nb-app .side-panel h3,
+.nb-app .intel-panel h3,.nb-app .feed-main b,.nb-app .table-token b,.nb-app .wallet-empty h3{color:#111310}
+.nb-app .hero h1 span{color:#7d7b73}
+.nb-app .hero p,.nb-app .page-heading p,.nb-app .stat-card span,.nb-app .stat-card small,
+.nb-app .token-name span,.nb-app .token-meta,.nb-app .profile-card p,.nb-app .wallet-empty p,
+.nb-app .feed-main p,.nb-app .table-token span,.nb-app .signal-cards small,.nb-app .signal-cards span{color:#6a6e66}
+.nb-app .token-card:hover{background:#faf8f2;border-color:#b9b4a7}
+.nb-app .btn,.nb-app .btn.primary{background:#121411;color:#d6b157;border-color:#111310}
+.nb-app .btn.primary:hover{background:#1c1e1a}
+.nb-app .market-tape{background:#ece8df;color:#262929;border-bottom-color:#bdbab0}
+.nb-app .table-wrap table{background-color:#fffefa}
+.nb-app th,.nb-app th{background:#f1efe8;color:#5d615a;border-bottom-color:#d5d1c6}
+.nb-app td{color:#3f443f;border-bottom-color:#e6e3da}
+.nb-app tbody tr:hover td{background:#f4f2ea}
+.nb-app .tabs{background:#eceae2;border-color:#c9c5ba}
+.nb-app .tabs button{color:#6a6e66}
+.nb-app .tabs button.active{background:#171916;color:#d4ad52}
+.nb-app .filter-input,.nb-app .tracker-form input,.nb-app .trade-input{background:#fffefa;color:#171916;border-color:#c9c5ba}
+.nb-app .app-footer{background:#f3f2ec;color:#111310;border-color:#c4c1b8}
+.nb-app .progress,.nb-app .mini-progress{background:#dcd8cc}
+.nb-app .progress i,.nb-app .mini-progress i{background:#8a6b26}
+.nb-app .change{color:#0a7d44}
+.nb-app .change.down{color:#b03a44}
+.nb-app .sync,.nb-app .count-chip{color:#686d64}
+.nb-app .eyebrow{color:#8a6b26}
+.nb-app .eyebrow:before{background:#8a6b26}
+.nb-app .section-head a{color:#715310}
+.nb-app .token-price b,.nb-app .feed-price b{color:#171916}
+/* overflow fixes */
+.nb-app .hero-copy{min-width:0;overflow:hidden}
+.nb-app .hero{grid-template-columns:minmax(0,1.03fr) minmax(0,.97fr)}
+.nb-app .discovery-zone{min-width:0;overflow-x:hidden}
+.nb-app .discovery-zone>*{min-width:0}
+.nb-app .token-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.nb-app .intelligence-grid{grid-template-columns:minmax(0,1.55fr) minmax(0,.45fr)}
+.nb-app .stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+/* dark chrome fix — sidebar/topbar/chain-card must stay dark over paper workspace */
+.nb-app .sidebar{background:#090b09!important;border-right-color:#2c2f2b}
+.nb-app .sidebar nav a{color:#9aa39a}
+.nb-app .sidebar nav a:hover{color:#e8ece6;background:#151813}
+.nb-app .sidebar nav a.active{color:#f2f4ef;background:#1a1d18}
+.nb-app .sidebar nav a b{background:#242822;color:#b9c0b6}
+.nb-app .sidebar .nav-label{color:#767d73}
+.nb-app .sidebar .brand strong{color:#f2f4ef}
+.nb-app .sidebar .brand small{color:#7d857a}
+.nb-app .sidebar .sidebar-foot{color:#8b938a}
+.nb-app .sidebar .sidebar-foot a{color:#a3aaa0}
+.nb-app .chain-card{background:#0d100d!important;border-color:#2c2f2b}
+.nb-app .chain-head span b{color:#e8ece6}
+.nb-app .chain-head span small{color:#7d857a}
+.nb-app .chain-row{color:#8b938a}
+.nb-app .chain-row code{color:#b5bcb1}
+.nb-app .topbar{background:#111310!important;border-bottom-color:#2c2f2b}
+.nb-app .topbar:before{color:#79806f}
+.nb-app .search-trigger{background:#1a1d18;border-color:#33372f;color:#a9b1a5}
+.nb-app .icon-btn{background:#1a1d18;border-color:#33372f;color:#a9b1a5}
+.nb-app .icon-btn:hover{color:#f2f4ef}
+.nb-app .live-pill{color:#9aa39a}
+.nb-app .connect-btn,.nb-app .primary-btn{background:#d6b157!important;color:#161307!important;border-color:#d6b157}
+
+/* ==== LIGHT-SURFACE LOCK (beat dark !important in visual-impact/monochrome-gold) ==== */
+.nb-app .hero,.nb-app .hero-copy{background:#fffefa!important;color:#111310!important}
+.nb-app .hero-art,.nb-app .market-snapshot{background:#faf8f2!important;border-left-color:#171916!important}
+.nb-app .hero .badge{color:#8c6617!important;border-color:#d9cfb4!important;background:#f6efdd!important}
+.nb-app .hero h1,.nb-app .hero h1 span{color:#111310!important}
+.nb-app .hero h1 span{color:#7d7b73!important}
+.nb-app .hero p{color:#6b6b64!important}
+.nb-app .hero .btn{background:#121411!important;border-color:#111310!important;color:#d6b157!important}
+.nb-app .hero-trust{color:#737970!important}
+.nb-app .hero-trust i{background:#a27e2a!important}
+.nb-app .snapshot-head,.nb-app .snapshot-foot{color:#777d74!important}
+.nb-app .snapshot-value strong{color:#151714!important}
+.nb-app .scene-floor{background-image:linear-gradient(#d9d5cb 1px,transparent 1px),linear-gradient(90deg,#d9d5cb 1px,transparent 1px)!important}
+.nb-app .cube-face{border-color:#c2b391!important;background:#fffefa!important;color:#a77b1f!important}
+.nb-app .node3d i{border-color:#a77b1f!important;background:#fffefa!important;box-shadow:none!important}
+.nb-app .node3d span{background:#fffefa!important;border-color:#d5d1c7!important;color:#454942!important}
+.nb-app .scene-hint,.nb-app .scene3d:after{color:#8a8d85!important}
+.nb-app .object3d.idle{animation:none}
+.nb-app .discovery-zone{background:#fffefa!important;color:#111310!important;border-color:#d1cdc3!important;margin-left:0!important;margin-right:0!important}
+.nb-app .discovery-zone:before{color:#efece4!important}
+.nb-app .zone-meta span{color:#8a6418!important}
+.nb-app .zone-meta p{color:#6f756e!important}
+.nb-app .discovery-zone .section-head{border-color:#e0ddd4!important}
+.nb-app .discovery-zone .section-head h2{color:#151714!important}
+.nb-app .pulse-grid .token-card,.nb-app .pulse-grid .token-card:nth-child(1),.nb-app .pulse-grid .token-card:nth-child(4){background:#fffefa!important;border-color:#d2cec4!important;color:#111310!important;box-shadow:none!important}
+.nb-app .pulse-grid .token-name b,.nb-app .pulse-grid .token-price b{color:#111310!important}
+.nb-app .pulse-grid .token-name span,.nb-app .pulse-grid .token-meta,.nb-app .pulse-grid .token-foot{color:#70726c!important}
+.nb-app .pulse-grid .progress{background:#e2dfd7!important}
+.nb-app .pulse-grid .token-card:hover{border-color:#a98331!important}
+.nb-app .intel-panel,.nb-app .index-panel,.nb-app .flow-panel,.nb-app .ops-panel,.nb-app .movers-panel,.nb-app .curve-panel,.nb-app .telemetry-panel{background:#fffefa!important;border-color:#d1cdc3!important;color:#111310!important}
+.nb-app .index-panel .panel-head h3,.nb-app .index-panel .index-value strong,.nb-app .flow-panel .ops-head h3,.nb-app .flow-panel .execution-row strong{color:#111310!important}
+.nb-app .index-panel .panel-kicker,.nb-app .index-panel .index-value small,.nb-app .flow-panel .ops-head>div>span,.nb-app .flow-panel .ops-head>b{color:#747b73!important}
+.nb-app .index-panel .range-tabs{border-color:#cac7bd!important}
+.nb-app .index-panel .range-tabs button{color:#686b63!important}
+.nb-app .index-panel .range-tabs button.active{background:#171917!important;color:#f5f3ea!important}
+.nb-app .index-panel .chart-grid{background:repeating-linear-gradient(to bottom,transparent 0,transparent 48px,#e3e0d7 49px)!important}
+.nb-app .index-panel .chart-labels{color:#77796f!important}
+.nb-app .flow-panel .ops-head{border-color:#e0ddd4!important}
+.nb-app .flow-panel .execution-head{background:#ece9e1!important;color:#686c64!important;border-color:#e0ddd4!important}
+.nb-app .flow-panel .execution-row{border-color:#e6e3da!important}
+.nb-app .flow-panel .execution-row:hover{background:#f4f1ea!important}
+.nb-app .flow-panel .execution-row time,.nb-app .flow-panel .execution-row code{color:#717870!important}
+.nb-app .large-chart .line{stroke:#9b741e!important}
+.nb-app .insight-strip{background:#fffefa!important;border-color:#d1cdc3!important;border-left:3px solid #111310!important}
+.nb-app .insight-strip .panel-kicker{color:#87661c!important}
+.nb-app .insight-strip h3{color:#151714!important}
+.nb-app .insight-strip p{color:#686b64!important}
+.nb-app .signal-cards>div,.nb-app .signal-cards>div:first-child,.nb-app .signal-cards>div:last-child{background:#fffefa!important;border-color:#d2cec4!important}
+.nb-app .signal-cards>div:first-child b{color:#111310!important}
+.nb-app .signal-cards>div:first-child span,.nb-app .signal-cards>div:first-child small{color:#6d7068!important}
+.nb-app .signal-cards>div:last-child b{color:#8a6418!important}
+.nb-app .stat-card,.nb-app .stat-card:nth-child(2){background:#fffefa!important;border-color:#d3cfc5!important}
+.nb-app .stat-card:nth-child(2) strong{color:#151714!important}
+.nb-app .stat-card:nth-child(2) span,.nb-app .stat-card:nth-child(2) small{color:#6e706a!important}
+.nb-app .stat-card:after{color:#aca99f!important}
+.nb-app .stats-grid{background:transparent!important;border:0!important}
+.nb-app .market-summary>div,.nb-app .collection-stats>div{background:#fffefa!important;border-color:#cbc8be!important}
+.nb-app .market-bottom-grid{border-color:#cbc6bb!important}
+.nb-app .market-bottom-grid .breadth-card{background:#fffefa!important;color:#111310!important;border-color:#d1cdc3!important}
+.nb-app .market-bottom-grid .breadth-card>span,.nb-app .market-bottom-grid .breadth-card footer b{color:#6d7068!important}
+.nb-app .breadth-bar{background:#e2dfd7!important}
+.nb-app .breadth-value strong{color:#151714!important}
+.nb-app .profile-card{background:#fffefa!important;color:#111310!important;border-color:#d0ccc2!important}
+.nb-app .profile-card h2{color:#111310!important}
+.nb-app .profile-card p{color:#6a6d66!important}
+.nb-app .profile-avatar{background:#171916!important;border-color:#a77b1f!important;color:#d2ad56!important}
+.nb-app .profile-card .primary-btn{background:#d4ad52!important;color:#111310!important}
+.nb-app .nft-hero{background:#fffefa!important;border-color:#c9c4b9!important;color:#111310!important}
+.nb-app .nft-copy h1{color:#111310!important}
+.nb-app .nft-copy p{color:#6a6d66!important}
+.nb-app .nft-showcase{background:#f0eee6!important}
+.nb-app .mint-bar{background:#e2dfd7!important}
+.nb-app .mint-bar i{background:#a77b1f!important}
+.nb-app .screener-table th,.nb-app .screener-table th:first-child,.nb-app .screener-table th:last-child{background:#f1efe8!important;color:#5d615a!important;box-shadow:0 1px #c9c5ba!important}
+.nb-app .screener-table th:first-child{color:#8a6418!important}
+.nb-app .table-status{background:#efece4!important;color:#666960!important;border-color:#c7c4bb!important}
+.nb-app .table-status span:first-child{color:#8a6418!important}
+.nb-app .screen-row:hover td,.nb-app .screen-row:hover td:first-child,.nb-app .screen-row:hover td:last-child{background:#f1eee7!important}
+.nb-app .screener-table,.nb-app .table-wrap{background:#fffefa!important;border-color:#c8c3b8!important}
+.nb-app .tracker{border-top-color:#171916!important}
+.nb-app .quick-buy{background:#151715!important;border-color:#151715!important;color:#e2bd5b!important}
+.nb-app .toast{background:#171916!important;border-color:#a77b1f!important;color:#ead17e!important}
+.nb-app .mobile-overlay{background:rgba(10,12,10,.55)}
