@@ -11,9 +11,9 @@ export const robinhoodTestnet = defineChain({
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
-      // Alchemy handles both read + write reliably from the browser.
-      // testnet.vibevibe.fun/rpc is read-only and rejects sendTransaction.
-      http: ["https://robinhood-testnet.g.alchemy.com/v2/alch__6QV6bqRic9nBcIh_gIzI"],
+      // RPC official Robinhood Chain Testnet — gratis, gak butuh key.
+      // Write dilakukan lewat injected provider wallet (window.ethereum).
+      http: ["https://rpc.testnet.chain.robinhood.com"],
     },
   },
   blockExplorers: {

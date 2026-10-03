@@ -312,9 +312,18 @@ async function getWalletProvider(): Promise<{
         params: [{ chainId: toHex(CHAIN.id) }],
       });
     } catch (e) {
-      const err = e as { code?: number };
-      // 4902 = chain belum ditambahkan di wallet
-      if (err.code === 4902) {
+      const err = e as {
+        code?: number;
+        message?: string;
+        data?: { originalError?: { code?: number } };
+      };
+      // 4902 = chain belum ditambahkan di wallet. MetaMask sering bungkus
+      // kodenya di data.originalError.code atau cuma kasih message
+      // "Unrecognized chain ID" — cek semuanya.
+      const unknown = err.code === 4902 ||
+        err.data?.originalError?.code === 4902 ||
+        /unrecognized chain id|try adding the chain/i.test(err.message ?? "");
+      if (unknown) {
         await eth.request({
           method: "wallet_addEthereumChain",
           params: [
@@ -322,7 +331,7 @@ async function getWalletProvider(): Promise<{
               chainId: toHex(CHAIN.id),
               chainName: "Robinhood Chain Testnet",
               nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-              rpcUrls: ["https://robinhood-testnet-rpc.publicnode.com"],
+              rpcUrls: ["https://rpc.testnet.chain.robinhood.com"],
               blockExplorerUrls: [CHAIN.explorer],
             },
           ],
