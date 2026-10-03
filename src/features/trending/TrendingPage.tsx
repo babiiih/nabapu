@@ -134,7 +134,7 @@ export default function TrendingPage() {
           disabled={loading}
           className="h-9 rounded-md border border-input bg-background px-3 text-sm hover:bg-accent disabled:opacity-50"
         >
-          {loading ? "Syncing…" : "Refresh"}
+          {loading ? <><span className="gold-spinner" aria-hidden />Syncing…</> : "Refresh"}
         </button>
       </div>
 

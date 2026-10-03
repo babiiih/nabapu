@@ -406,3 +406,116 @@ nav a[data-active='true']::after, nav button[data-active='true']::after {
   box-shadow: 0 10px 30px -10px color-mix(in oklch, var(--primary) 50%, transparent) !important;
 }
 .recharts-tooltip-label { color: var(--primary) !important; font-weight: 700; }
+
+/* ============================================================
+   ROUND 4 — hover states + loading/menunggu
+   ============================================================ */
+
+/* --- Tombol sekunder (Refresh/Load more/filter/sort): hover emas --- */
+main button:not([class*='privy']):not(.hero-panel a),
+main [role='button'] {
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+}
+main button:not([class*='privy']):not(:disabled):hover,
+main [role='button']:hover {
+  border-color: color-mix(in oklch, var(--primary) 55%, var(--border) 45%);
+  color: color-mix(in oklch, var(--primary) 85%, var(--foreground) 15%);
+  box-shadow: 0 6px 18px -8px color-mix(in oklch, var(--primary) 60%, transparent);
+  transform: translateY(-1px);
+}
+main button:not(:disabled):active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* --- Spinner emas (dipakai tombol Syncing + route loader) --- */
+.gold-spinner {
+  display: inline-block;
+  width: 0.9em; height: 0.9em;
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklch, var(--primary) 30%, transparent);
+  border-top-color: var(--primary);
+  animation: gold-spin 0.7s linear infinite;
+  vertical-align: -0.15em;
+  margin-right: 0.45em;
+}
+@keyframes gold-spin { to { transform: rotate(360deg); } }
+
+/* --- Skeleton stagger: shimmer jalan berurutan --- */
+.market-grid > .token-card:nth-child(2) .skeleton::after { animation-delay: 0.12s; }
+.market-grid > .token-card:nth-child(3) .skeleton::after { animation-delay: 0.24s; }
+.market-grid > .token-card:nth-child(4) .skeleton::after { animation-delay: 0.36s; }
+.market-grid > .token-card:nth-child(5) .skeleton::after { animation-delay: 0.48s; }
+.market-grid > .token-card:nth-child(n+6) .skeleton::after { animation-delay: 0.6s; }
+
+/* --- Table rows: hover geser + panah emas --- */
+table tbody tr, [role='row']:not([role='columnheader']) {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+table tbody tr:hover {
+  transform: translateX(2px);
+}
+tr[class*='cursor-pointer']:hover td:first-child,
+tr[class*='cursor-pointer']:hover [role='cell']:first-child {
+  box-shadow: inset 2px 0 0 var(--primary);
+}
+
+/* --- Header TopNav tabs: hover underline emas tumbuh --- */
+header nav a, header nav button {
+  position: relative;
+  transition: color 0.16s ease;
+}
+header nav a:not([data-active='true']):hover,
+header nav button:not([data-active='true']):hover {
+  color: var(--foreground);
+}
+header nav a:not([data-active='true'])::after,
+header nav button:not([data-active='true'])::after {
+  content: '';
+  position: absolute;
+  left: 0.5rem; right: 0.5rem; bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  transform: scaleX(0);
+  transition: transform 0.22s ease;
+}
+header nav a:not([data-active='true']):hover::after,
+header nav button:not([data-active='true']):hover::after {
+  transform: scaleX(1);
+}
+
+/* --- Sidebar menu: hover glow lebih hidup --- */
+[data-slot='sidebar-menu-button']:not([data-active='true']):hover {
+  box-shadow: 0 4px 16px -8px color-mix(in oklch, var(--primary) 55%, transparent);
+}
+
+/* --- Search input: hover border emas --- */
+input:not(:focus):hover, textarea:not(:focus):hover {
+  border-color: color-mix(in oklch, var(--primary) 45%, var(--border) 55%);
+}
+
+/* --- Empty state: ikon emas --- */
+main [class*='empty'] svg, main [class*='Empty'] svg {
+  color: var(--primary);
+  filter: drop-shadow(0 0 8px color-mix(in oklch, var(--primary) 55%, transparent));
+}
+
+/* --- Route transition loader: gold top bar --- */
+.gold-route-loader {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: 100;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  background-size: 40% 100%;
+  animation: gold-route-slide 1s linear infinite;
+}
+@keyframes gold-route-slide {
+  from { background-position: -40% 0; }
+  to { background-position: 140% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-spinner, .gold-route-loader { animation: none; }
+  main button:hover, table tbody tr:hover { transform: none; }
+}

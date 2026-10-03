@@ -154,7 +154,7 @@ export default function TrenchesPage() {
             disabled={!CA_RE.test(ca.trim()) || caState.kind === "checking"}
             className="bg-primary text-primary-foreground h-9 rounded-md px-4 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            {caState.kind === "checking" ? "Checking…" : "Open"}
+            {caState.kind === "checking" ? <><span className="gold-spinner" aria-hidden />Checking…</> : "Open"}
           </button>
         </div>
         {caState.kind === "nf" && (
