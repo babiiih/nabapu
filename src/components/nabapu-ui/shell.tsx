@@ -13,18 +13,18 @@ const NAV = [
   {
     group: 'TERMINAL',
     items: [
-      { route: 'dashboard', icon: 'grid', label: 'Overview', url: '/' },
-      { route: 'market', icon: 'market', label: 'Market', url: '/market', badge: '24' },
-      { route: 'trending', icon: 'flame', label: 'Trending', url: '/trending' },
-      { route: 'trenches', icon: 'radar', label: 'Trenches', url: '/trenches', live: true },
+      { route: 'dashboard', icon: 'grid', label: 'Overview', url: '/nb/dashboard' },
+      { route: 'market', icon: 'market', label: 'Market', url: '/nb/market', badge: '24' },
+      { route: 'trending', icon: 'flame', label: 'Trending', url: '/nb/trending' },
+      { route: 'trenches', icon: 'radar', label: 'Trenches', url: '/nb/trenches', live: true },
     ],
   },
   {
     group: 'PORTFOLIO',
     items: [
-      { route: 'wallet', icon: 'wallet', label: 'Wallet', url: '/wallet' },
-      { route: 'nft', icon: 'image', label: 'NFT Collection', url: '/nft' },
-      { route: 'profile', icon: 'user', label: 'Profile', url: '/profile' },
+      { route: 'wallet', icon: 'wallet', label: 'Wallet', url: '/nb/wallet' },
+      { route: 'nft', icon: 'image', label: 'NFT Collection', url: '/nb/nft' },
+      { route: 'profile', icon: 'user', label: 'Profile', url: '/nb/profile' },
     ],
   },
 ];
@@ -44,7 +44,7 @@ export function NabapuShell({ children }: { children: React.ReactNode }) {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const activeRoute = pathname.replace('/', '') || 'dashboard';
+  const activeRoute = (pathname.match(/nb\/([a-z]+)/)?.[1]) || 'dashboard';
 
   // live clock (Asia/Jakarta)
   const [clock, setClock] = useState('');

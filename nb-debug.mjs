@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const logs = [];
+page.on('pageerror', e => logs.push('[PAGEERROR] ' + String(e).slice(0, 200)));
+await page.goto('https://nabapu.vercel.app/nb/dashboard', { waitUntil: 'load', timeout: 45000 }).catch(() => {});
+await page.waitForFunction(() => (document.getElementById('root')?.innerHTML.length || 0) > 500, { timeout: 20000 }).catch(() => {});
+await page.waitForTimeout(3000);
+const classes = await page.evaluate(() => [...document.querySelectorAll('#root *')].map(e => e.className && String(e.className).split(' ')[0]).filter(Boolean).slice(0, 60).join(', '));
+const main = await page.evaluate(() => document.querySelector('.nb-app .workspace main')?.innerHTML.slice(0, 300) || 'NO MAIN');
+console.log('classes:', classes);
+console.log('main:', main);
+console.log(logs.join('\n') || '(no pageerrors)');
+await browser.close();

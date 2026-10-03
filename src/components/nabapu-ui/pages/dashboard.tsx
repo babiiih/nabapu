@@ -58,10 +58,10 @@ export function NbDashboard() {
             blocks are confirmed.
           </p>
           <div className="hero-actions">
-            <Link className="btn primary" to="/market">
+            <Link className="btn primary" to="/nb/market">
               Open market <Icon name="arrow" />
             </Link>
-            <Link className="btn" to="/trenches">
+            <Link className="btn" to="/nb/trenches">
               Live feed
             </Link>
           </div>
@@ -105,7 +105,7 @@ export function NbDashboard() {
         </div>
         <div className="section-head">
           <h2>Market pulse</h2>
-          <Link to="/market">OPEN SCREENER →</Link>
+          <Link to="/nb/market">OPEN SCREENER →</Link>
         </div>
         <div className="token-grid pulse-grid">
           {busy
@@ -165,7 +165,7 @@ export function NbDashboard() {
               <span className="panel-kicker">REAL-TIME</span>
               <h3>Top movers</h3>
             </div>
-            <Link to="/trending">ALL</Link>
+            <Link to="/nb/trending">ALL</Link>
           </div>
           {items
             .slice()
@@ -194,7 +194,7 @@ export function NbDashboard() {
           <h3>7 of {items.length || 24} assets recorded net buyer growth.</h3>
           <p>Late-curve assets accounted for 61.4% of indexed volume.</p>
         </div>
-        <Link to="/trending" className="btn">
+        <Link to="/nb/trending" className="btn">
           View ranking <Icon name="arrow" />
         </Link>
       </div>
