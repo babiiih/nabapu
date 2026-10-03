@@ -6,7 +6,7 @@
  * can be bought and sold from this site.
  */
 import { useEffect, useState } from "react";
-import { useAccount, useBalance, useConnect, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useBalance, useChainId, useConnect, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { parseAbi, parseEther, formatEther } from "viem";
 import { getLaunch, quoteUsdRates, type VibesLaunch } from "@/lib/vibes";
 import { Link } from "@tanstack/react-router";
@@ -298,6 +298,8 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
   const { address, isConnected } = useAccount();
   const { connectors, connect } = useConnect();
   const { writeContractAsync, isPending } = useWriteContract();
+  const activeChainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const pair = launch.curveAddress as `0x${string}`;
   const token = launch.tokenAddress as `0x${string}`;
 
@@ -360,6 +362,11 @@ function TradeBox({ launch }: { launch: VibesLaunch }) {
     setOk(null);
     try {
       if (amt <= 0n) throw new Error("enter an amount > 0");
+      // wagmi v3 transport connector menolak request kalau wallet lagi di chain
+      // lain (ChainDisconnectedError). Switch dulu, baru kirim tx.
+      if (activeChainId !== CHAIN.id) {
+        await switchChainAsync({ chainId: CHAIN.id });
+      }
       const deadline = BigInt(Math.floor(Date.now() / 1000) + 600);
       const bps = BigInt(slip * 100);
 

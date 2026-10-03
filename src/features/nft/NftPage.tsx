@@ -9,8 +9,10 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
+  useChainId,
   useConnect,
   useReadContract,
+  useSwitchChain,
   useWriteContract,
 } from "wagmi";
 import { parseAbi } from "viem";
@@ -44,6 +46,8 @@ export default function NftPage() {
   const { address, isConnected } = useAccount();
   const { connectors, connect } = useConnect();
   const { writeContractAsync, isPending } = useWriteContract();
+  const activeChainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
 
   const [manifest, setManifest] = useState<Entry[] | null>(null);
   const [filter, setFilter] = useState<Rarity | "All">("All");
@@ -97,6 +101,10 @@ export default function NftPage() {
     setErr(null);
     setOk(null);
     try {
+      // switch dulu kalau wallet di chain lain (wagmi v3 menolak request cross-chain)
+      if (activeChainId !== CHAIN.id) {
+        await switchChainAsync({ chainId: CHAIN.id });
+      }
       const hash = await writeContractAsync({
         address: NFT_COLLECTION,
         abi: NFT_ABI,
