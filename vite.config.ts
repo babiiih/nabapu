@@ -89,6 +89,9 @@ export default defineConfig({
         find: /^__vite-optional-peer-dep:@solana\/web3\.js:/,
         replacement: path.resolve(__dirname, './src/shims/solana-web3.ts'),
       },
+      // axios hanya dipakai untuk type AxiosError (gak masuk client bundle).
+      //npm hang saat C: penuh → shim lokal.
+      { find: /^axios$/, replacement: path.resolve(__dirname, './src/shims/axios.ts') },
     ],
   },
   server: {

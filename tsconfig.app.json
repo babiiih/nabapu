@@ -14,7 +14,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "axios": ["./src/shims/axios.ts"]
     },
     "strict": true,
     "noUnusedLocals": true,

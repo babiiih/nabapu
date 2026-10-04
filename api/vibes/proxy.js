@@ -30,6 +30,13 @@ const ALLOWED_PREFIXES = [
 const ASSET_STATS_RE = /^\/assets\/0x[a-f0-9]{40}\/(candles|flow24h|activity)$/i;
 
 export default async function handler(req, res) {
+  // SECURITY: read-only proxy — tolak semua method selain GET/HEAD.
+  // Path allowlist saja tidak cukup; POST/PUT/DELETE harus ditolak eksplisit.
+  if (req.method && !["GET", "HEAD", "OPTIONS"].includes(req.method.toUpperCase())) {
+    res.setHeader("Allow", "GET, HEAD, OPTIONS");
+    return res.status(405).json({ error: "METHOD_NOT_ALLOWED", method: req.method });
+  }
+
   // vercel.json rewrites /api/vibes/(.*) -> /api/vibes/proxy and the captured
   // group arrives as ?path=... (with a leading slash, e.g. "/launches").
   const { path: rawPath } = req.query;
